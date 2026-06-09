@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a1f3c">
+<title>World Cup 2026 — Prediction League</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Narrow:wght@600;700&display=swap');
+  :root{--navy:#0a1f3c;--navy2:#102a52;--ink:#06182f;--gold:#f4c430;--gold2:#ffd966;--green:#00c46a;--green-d:#00a058;--red:#e23744;--line:rgba(255,255,255,.12);--shadow:0 10px 30px rgba(0,0,0,.35);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Archivo',-apple-system,sans-serif;background:radial-gradient(1200px 600px at 80% -10%,rgba(244,196,48,.16),transparent 60%),radial-gradient(900px 500px at -10% 20%,rgba(0,196,106,.14),transparent 55%),linear-gradient(180deg,var(--navy),var(--ink));background-attachment:fixed;color:#fff;min-height:100vh;overflow-x:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 2px,transparent 2px 64px);mix-blend-mode:overlay;}
+  .wrap{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:0 14px 150px;}
+  header{padding:20px 4px 6px;text-align:center;}
+  .badge{display:inline-flex;align-items:center;gap:7px;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:11px;color:var(--ink);background:linear-gradient(180deg,var(--gold2),var(--gold));padding:5px 12px;border-radius:999px;box-shadow:var(--shadow);}
+  h1{font-family:'Anton';font-weight:400;font-size:clamp(30px,10vw,48px);line-height:.92;margin:9px 0 2px;text-transform:uppercase;background:linear-gradient(180deg,#fff,#d7e3f5);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sub{font-family:'Archivo Narrow';font-weight:700;letter-spacing:.2em;text-transform:uppercase;font-size:11.5px;color:var(--gold);}
+  .leaguechip{margin-top:8px;display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#c3d0e6;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;padding:6px 13px;}
+  .leaguechip b{color:#fff;}
+  .leaguechip .x{color:#8aa0c2;cursor:pointer;font-weight:800;}
+
+  .card{background:linear-gradient(180deg,rgba(22,44,82,.9),rgba(13,30,58,.92));border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;box-shadow:var(--shadow);backdrop-filter:blur(6px);}
+  .card h2{font-family:'Anton';font-weight:400;text-transform:uppercase;font-size:21px;margin:0 0 4px;}
+  .card p.lead{margin:0 0 6px;color:#c3d0e6;font-size:13.5px;line-height:1.5;}
+
+  .btn{appearance:none;border:0;cursor:pointer;font-family:'Archivo';font-weight:800;border-radius:13px;padding:14px 16px;font-size:15px;width:100%;transition:transform .08s,filter .15s;margin-top:8px;}
+  .btn:active{transform:scale(.975);}
+  .btn-gold{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--ink);box-shadow:0 6px 18px rgba(244,196,48,.35);}
+  .btn-green{background:linear-gradient(180deg,#19d97e,var(--green-d));color:#04261a;box-shadow:0 6px 18px rgba(0,196,106,.3);}
+  .btn-ghost{background:rgba(255,255,255,.07);color:#fff;border:1px solid var(--line);}
+  .btn-row{display:flex;gap:9px;}
+  .btn-row .btn{font-size:13.5px;padding:12px;}
+
+  .modetabs{display:flex;gap:6px;margin:14px 0 6px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:16px;padding:5px;}
+  .modetab{flex:1;text-align:center;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.03em;text-transform:uppercase;font-size:11.5px;padding:10px 4px;border-radius:11px;color:#b9c6dc;cursor:pointer;transition:.15s;}
+  .modetab.active{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--ink);font-weight:800;}
+
+  .stagebar{display:flex;gap:7px;overflow-x:auto;padding:6px 2px 10px;margin:0 -4px;scrollbar-width:none;}
+  .stagebar::-webkit-scrollbar{display:none;}
+  .chip{flex:0 0 auto;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:12px;padding:9px 13px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#b9c6dc;white-space:nowrap;cursor:pointer;transition:.15s;}
+  .chip.active{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--ink);border-color:transparent;font-weight:800;}
+  .chip.locked{opacity:.4;}
+  .chip .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:6px;vertical-align:middle;}
+  .chip .lk{margin-left:5px;}
+
+  .banner{border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.5;margin:4px 0 10px;}
+  .banner.open{background:rgba(0,196,106,.12);border:1px solid rgba(0,196,106,.35);color:#a9f0cf;}
+  .banner.wait{background:rgba(244,196,48,.1);border:1px solid rgba(244,196,48,.3);color:#ffe7a6;}
+  .banner.lock{background:rgba(226,55,68,.1);border:1px solid rgba(226,55,68,.3);color:#f7b7bd;}
+  .banner b{color:#fff;}
+
+  .group-head{display:flex;align-items:center;gap:10px;margin:18px 0 8px;}
+  .group-tag{font-family:'Anton';font-size:19px;background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:10px;padding:3px 11px;}
+  .group-head .gl{flex:1;height:1px;background:var(--line);}
+
+  .match{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:15px;padding:11px 11px 9px;margin:9px 0;}
+  .mdtag{text-align:center;font-family:'Archivo Narrow';font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#7d8fae;margin-bottom:7px;}
+  .teams{display:grid;grid-template-columns:1fr 78px 1fr;align-items:center;gap:6px;}
+  .team{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;}
+  .flag{font-size:27px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));}
+  .tname{font-family:'Archivo Narrow';font-weight:700;font-size:12.5px;line-height:1.05;}
+  .vs{display:flex;align-items:center;justify-content:center;gap:5px;}
+  .vs .dash{color:#7d8fae;font-family:'Anton';font-size:18px;}
+  .score{width:44px;height:48px;border-radius:11px;border:1px solid var(--line);background:rgba(0,0,0,.28);color:#fff;text-align:center;font-family:'Anton';font-size:24px;-moz-appearance:textfield;}
+  .score::-webkit-outer-spin-button,.score::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .score:focus{outline:2px solid var(--gold);border-color:var(--gold);background:rgba(0,0,0,.4);}
+  .score.res:focus{outline-color:var(--green);border-color:var(--green);}
+  .score:disabled{opacity:.5;}
+  .verdict{text-align:center;margin-top:7px;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.07em;text-transform:uppercase;font-size:10.5px;color:#8aa0c2;min-height:13px;}
+  .verdict.win{color:var(--green);}.verdict.draw{color:var(--gold);}
+  .ptbadge{display:inline-block;margin-left:8px;font-family:'Anton';font-size:12px;color:var(--ink);background:var(--gold);border-radius:6px;padding:1px 7px;vertical-align:middle;}
+  .ptbadge.zero{background:rgba(255,255,255,.15);color:#9fb0cc;}
+  .lockicon{text-align:center;font-size:10px;color:#8aa0c2;margin-top:4px;font-family:'Archivo Narrow';font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+
+  .ltable{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px;}
+  .ltable th{font-family:'Archivo Narrow';font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:10px;color:#8aa0c2;padding:6px 3px;text-align:center;border-bottom:1px solid var(--line);}
+  .ltable th.tl,.ltable td.tl{text-align:left;}
+  .ltable td{padding:7px 3px;text-align:center;border-bottom:1px solid rgba(255,255,255,.06);}
+  .ltable td.tl{font-family:'Archivo Narrow';font-weight:700;font-size:12.5px;}
+  .ltable td.pts{font-family:'Anton';color:var(--gold);font-size:15px;}
+  .ltable tr.q1 td.pos,.ltable tr.q2 td.pos{color:var(--green);font-weight:800;}
+  .ltable tr.q3 td.pos{color:var(--gold);font-weight:800;}
+  .ltable .miniflag{font-size:15px;margin-right:5px;}
+  .qkey{font-size:10.5px;color:#8aa0c2;margin-top:7px;line-height:1.5;}
+  .qkey b{color:var(--green);}.qkey i{color:var(--gold);font-style:normal;}
+
+  .ko-match{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:15px;padding:11px;margin:9px 0;}
+  .ko-match .lbl{font-family:'Archivo Narrow';font-weight:700;letter-spacing:.07em;text-transform:uppercase;font-size:10.5px;color:#8aa0c2;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px;}
+  .ko-teams{display:grid;grid-template-columns:1fr 78px 1fr;gap:6px;align-items:center;}
+  .ko-side{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;}
+  .ko-side .tn{font-family:'Archivo Narrow';font-weight:700;font-size:12px;line-height:1.1;}
+  .ko-side.tbd .tn{color:#5f7a9c;}
+  .penwrap{display:flex;gap:6px;justify-content:center;align-items:center;margin-top:7px;}
+  .penwrap input{width:38px;height:34px;text-align:center;border-radius:9px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:#fff;font-family:'Anton';font-size:16px;}
+  .penwrap span{font-size:10px;color:#8aa0c2;font-family:'Archivo Narrow';font-weight:700;text-transform:uppercase;}
+  .winner-pill{margin-top:7px;text-align:center;font-family:'Archivo Narrow';font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--green);}
+
+  label.fld{display:block;margin:12px 0 6px;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.07em;text-transform:uppercase;font-size:12px;color:var(--gold);}
+  select,input.txt{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.28);color:#fff;font-family:'Archivo';font-size:16px;font-weight:600;}
+  select:focus,input.txt:focus{outline:2px solid var(--gold);border-color:var(--gold);}
+  .hint{font-size:12px;color:#8aa0c2;margin-top:4px;}
+
+  .rules{display:grid;gap:8px;margin-top:6px;}
+  .rule{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;padding:9px 12px;}
+  .pts{font-family:'Anton';font-size:23px;color:var(--gold);min-width:50px;text-align:center;}
+  .rule .d{font-size:13px;color:#d6e0f0;line-height:1.35;}.rule .d b{color:#fff;}
+
+  .lbrow{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:13px;background:rgba(255,255,255,.04);border:1px solid var(--line);margin:7px 0;}
+  .lbrow .rank{font-family:'Anton';font-size:20px;width:30px;text-align:center;color:#8aa0c2;}
+  .lbrow.r1 .rank{color:var(--gold);}.lbrow.r2 .rank{color:#cdd7e6;}.lbrow.r3 .rank{color:#d98a4a;}
+  .lbrow .nm{flex:1;font-weight:700;font-size:15px;}
+  .lbrow .nm small{display:block;color:#8aa0c2;font-weight:600;font-size:11px;}
+  .lbrow .sc{font-family:'Anton';font-size:24px;color:var(--gold);}
+  .lbrow.me{border-color:var(--gold);background:rgba(244,196,48,.08);}
+
+  .savebar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:11px 14px calc(11px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(6,24,47,0),rgba(6,24,47,.96) 28%);}
+  .savebar .inner{max-width:600px;margin:0 auto;display:flex;gap:9px;}
+  .savebar .btn{margin:0;}
+  .savestatus{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:31;font-size:11px;color:#8aa0c2;font-family:'Archivo Narrow';font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:rgba(6,24,47,.85);padding:4px 9px;border-radius:8px;opacity:0;transition:.3s;}
+  .savestatus.show{opacity:1;}
+
+  .toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:var(--ink);border:1px solid var(--gold);color:#fff;padding:11px 17px;border-radius:13px;font-weight:700;font-size:13.5px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s;z-index:50;text-align:center;max-width:90%;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .step-pill{display:inline-block;font-family:'Archivo Narrow';font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--gold);border-radius:6px;padding:2px 8px;margin-bottom:8px;}
+  .tiny{font-size:11.5px;color:#8aa0c2;line-height:1.5;}
+  .summary-line{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14px;}
+  .summary-line:last-child{border-bottom:0;}.summary-line b{color:var(--gold);}
+  .scoreboard{display:flex;align-items:baseline;justify-content:center;gap:8px;margin:4px 0 2px;}
+  .scoreboard .big{font-family:'Anton';font-size:46px;color:var(--gold);}
+  .scoreboard .lab{font-family:'Archivo Narrow';font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:#b9c6dc;}
+  .pbreak{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;}
+  .pcell{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:11px;padding:9px;text-align:center;}
+  .pcell .n{font-family:'Anton';font-size:22px;color:#fff;}
+  .pcell .t{font-size:10.5px;color:#8aa0c2;text-transform:uppercase;letter-spacing:.05em;font-family:'Archivo Narrow';font-weight:700;}
+  .reveal{opacity:0;transform:translateY(12px);animation:rise .45s ease forwards;}
+  @keyframes rise{to{opacity:1;transform:none;}}
+  .center{text-align:center;}
+  .spin{display:inline-block;width:30px;height:30px;border:3px solid rgba(255,255,255,.2);border-top-color:var(--gold);border-radius:50%;animation:sp 0.8s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .overlay{position:fixed;inset:0;z-index:80;background:rgba(3,12,26,.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+  .overlay .msg{font-size:13px;color:#c3d0e6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge" id="topBadge">⚽ 2026 · Prediction League</span>
+    <h1 id="appTitle">World Cup<br>League</h1>
+    <div class="sub" id="appSub">Canada · Mexico · USA</div>
+    <div id="leagueChipWrap"></div>
+  </header>
+  <div id="app"></div>
+</div>
+
+<div class="savebar" id="savebar" style="display:none;"><div class="inner">
+  <button class="btn btn-ghost" id="leaveBtn" style="flex:0 0 auto;width:auto;">⚙️</button>
+  <button class="btn btn-green" id="syncBtn">🔄 Refresh</button>
+</div></div>
+<div class="savestatus" id="savestatus"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const WC_DATA = {"combos":{"EFGHIJKL":"EJIFHGLK","DFGHIJKL":"HGIDJFLK","DEGHIJKL":"EJIDHGLK","DEFHIJKL":"EJIDHFLK","DEFGIJKL":"EGIDJFLK","DEFGHJKL":"EGJDHFLK","DEFGHIKL":"EGIDHFLK","DEFGHIJL":"EGJDHFLI","DEFGHIJK":"EGJDHFIK","CFGHIJKL":"HGICJFLK","CEGHIJKL":"EJICHGLK","CEFHIJKL":"EJICHFLK","CEFGIJKL":"EGICJFLK","CEFGHJKL":"EGJCHFLK","CEFGHIKL":"EGICHFLK","CEFGHIJL":"EGJCHFLI","CEFGHIJK":"EGJCHFIK","CDGHIJKL":"HGICJDLK","CDFHIJKL":"CJIDHFLK","CDFGIJKL":"CGIDJFLK","CDFGHJKL":"CGJDHFLK","CDFGHIKL":"CGIDHFLK","CDFGHIJL":"CGJDHFLI","CDFGHIJK":"CGJDHFIK","CDEHIJKL":"EJICHDLK","CDEGIJKL":"EGICJDLK","CDEGHJKL":"EGJCHDLK","CDEGHIKL":"EGICHDLK","CDEGHIJL":"EGJCHDLI","CDEGHIJK":"EGJCHDIK","CDEFIJKL":"CJEDIFLK","CDEFHJKL":"CJEDHFLK","CDEFHIKL":"CEIDHFLK","CDEFHIJL":"CJEDHFLI","CDEFHIJK":"CJEDHFIK","CDEFGJKL":"CGEDJFLK","CDEFGIKL":"CGEDIFLK","CDEFGIJL":"CGEDJFLI","CDEFGIJK":"CGEDJFIK","CDEFGHKL":"CGEDHFLK","CDEFGHJL":"CGJDHFLE","CDEFGHJK":"CGJDHFEK","CDEFGHIL":"CGEDHFLI","CDEFGHIK":"CGEDHFIK","CDEFGHIJ":"CGJDHFEI","BFGHIJKL":"HJBFIGLK","BEGHIJKL":"EJIBHGLK","BEFHIJKL":"EJBFIHLK","BEFGIJKL":"EJBFIGLK","BEFGHJKL":"EJBFHGLK","BEFGHIKL":"EGBFIHLK","BEFGHIJL":"EJBFHGLI","BEFGHIJK":"EJBFHGIK","BDGHIJKL":"HJBDIGLK","BDFHIJKL":"HJBDIFLK","BDFGIJKL":"IGBDJFLK","BDFGHJKL":"HGBDJFLK","BDFGHIKL":"HGBDIFLK","BDFGHIJL":"HGBDJFLI","BDFGHIJK":"HGBDJFIK","BDEHIJKL":"EJBDIHLK","BDEGIJKL":"EJBDIGLK","BDEGHJKL":"EJBDHGLK","BDEGHIKL":"EGBDIHLK","BDEGHIJL":"EJBDHGLI","BDEGHIJK":"EJBDHGIK","BDEFIJKL":"EJBDIFLK","BDEFHJKL":"EJBDHFLK","BDEFHIKL":"EIBDHFLK","BDEFHIJL":"EJBDHFLI","BDEFHIJK":"EJBDHFIK","BDEFGJKL":"EGBDJFLK","BDEFGIKL":"EGBDIFLK","BDEFGIJL":"EGBDJFLI","BDEFGIJK":"EGBDJFIK","BDEFGHKL":"EGBDHFLK","BDEFGHJL":"HGBDJFLE","BDEFGHJK":"HGBDJFEK","BDEFGHIL":"EGBDHFLI","BDEFGHIK":"EGBDHFIK","BDEFGHIJ":"HGBDJFEI","BCGHIJKL":"HJBCIGLK","BCFHIJKL":"HJBCIFLK","BCFGIJKL":"IGBCJFLK","BCFGHJKL":"HGBCJFLK","BCFGHIKL":"HGBCIFLK","BCFGHIJL":"HGBCJFLI","BCFGHIJK":"HGBCJFIK","BCEHIJKL":"EJBCIHLK","BCEGIJKL":"EJBCIGLK","BCEGHJKL":"EJBCHGLK","BCEGHIKL":"EGBCIHLK","BCEGHIJL":"EJBCHGLI","BCEGHIJK":"EJBCHGIK","BCEFIJKL":"EJBCIFLK","BCEFHJKL":"EJBCHFLK","BCEFHIKL":"EIBCHFLK","BCEFHIJL":"EJBCHFLI","BCEFHIJK":"EJBCHFIK","BCEFGJKL":"EGBCJFLK","BCEFGIKL":"EGBCIFLK","BCEFGIJL":"EGBCJFLI","BCEFGIJK":"EGBCJFIK","BCEFGHKL":"EGBCHFLK","BCEFGHJL":"HGBCJFLE","BCEFGHJK":"HGBCJFEK","BCEFGHIL":"EGBCHFLI","BCEFGHIK":"EGBCHFIK","BCEFGHIJ":"HGBCJFEI","BCDHIJKL":"HJBCIDLK","BCDGIJKL":"IGBCJDLK","BCDGHJKL":"HGBCJDLK","BCDGHIKL":"HGBCIDLK","BCDGHIJL":"HGBCJDLI","BCDGHIJK":"HGBCJDIK","BCDFIJKL":"CJBDIFLK","BCDFHJKL":"CJBDHFLK","BCDFHIKL":"CIBDHFLK","BCDFHIJL":"CJBDHFLI","BCDFHIJK":"CJBDHFIK","BCDFGJKL":"CGBDJFLK","BCDFGIKL":"CGBDIFLK","BCDFGIJL":"CGBDJFLI","BCDFGIJK":"CGBDJFIK","BCDFGHKL":"CGBDHFLK","BCDFGHJL":"CGBDHFLJ","BCDFGHJK":"HGBCJFDK","BCDFGHIL":"CGBDHFLI","BCDFGHIK":"CGBDHFIK","BCDFGHIJ":"HGBCJFDI","BCDEIJKL":"EJBCIDLK","BCDEHJKL":"EJBCHDLK","BCDEHIKL":"EIBCHDLK","BCDEHIJL":"EJBCHDLI","BCDEHIJK":"EJBCHDIK","BCDEGJKL":"EGBCJDLK","BCDEGIKL":"EGBCIDLK","BCDEGIJL":"EGBCJDLI","BCDEGIJK":"EGBCJDIK","BCDEGHKL":"EGBCHDLK","BCDEGHJL":"HGBCJDLE","BCDEGHJK":"HGBCJDEK","BCDEGHIL":"EGBCHDLI","BCDEGHIK":"EGBCHDIK","BCDEGHIJ":"HGBCJDEI","BCDEFJKL":"CJBDEFLK","BCDEFIKL":"CEBDIFLK","BCDEFIJL":"CJBDEFLI","BCDEFIJK":"CJBDEFIK","BCDEFHKL":"CEBDHFLK","BCDEFHJL":"CJBDHFLE","BCDEFHJK":"CJBDHFEK","BCDEFHIL":"CEBDHFLI","BCDEFHIK":"CEBDHFIK","BCDEFHIJ":"CJBDHFEI","BCDEFGKL":"CGBDEFLK","BCDEFGJL":"CGBDJFLE","BCDEFGJK":"CGBDJFEK","BCDEFGIL":"CGBDEFLI","BCDEFGIK":"CGBDEFIK","BCDEFGIJ":"CGBDJFEI","BCDEFGHL":"CGBDHFLE","BCDEFGHK":"CGBDHFEK","BCDEFGHJ":"HGBCJFDE","BCDEFGHI":"CGBDHFEI","AFGHIJKL":"HJIFAGLK","AEGHIJKL":"EJIAHGLK","AEFHIJKL":"EJIFAHLK","AEFGIJKL":"EJIFAGLK","AEFGHJKL":"EGJFAHLK","AEFGHIKL":"EGIFAHLK","AEFGHIJL":"EGJFAHLI","AEFGHIJK":"EGJFAHIK","ADGHIJKL":"HJIDAGLK","ADFHIJKL":"HJIDAFLK","ADFGIJKL":"IGJDAFLK","ADFGHJKL":"HGJDAFLK","ADFGHIKL":"HGIDAFLK","ADFGHIJL":"HGJDAFLI","ADFGHIJK":"HGJDAFIK","ADEHIJKL":"EJIDAHLK","ADEGIJKL":"EJIDAGLK","ADEGHJKL":"EGJDAHLK","ADEGHIKL":"EGIDAHLK","ADEGHIJL":"EGJDAHLI","ADEGHIJK":"EGJDAHIK","ADEFIJKL":"EJIDAFLK","ADEFHJKL":"HJEDAFLK","ADEFHIKL":"HEIDAFLK","ADEFHIJL":"HJEDAFLI","ADEFHIJK":"HJEDAFIK","ADEFGJKL":"EGJDAFLK","ADEFGIKL":"EGIDAFLK","ADEFGIJL":"EGJDAFLI","ADEFGIJK":"EGJDAFIK","ADEFGHKL":"HGEDAFLK","ADEFGHJL":"HGJDAFLE","ADEFGHJK":"HGJDAFEK","ADEFGHIL":"HGEDAFLI","ADEFGHIK":"HGEDAFIK","ADEFGHIJ":"HGJDAFEI","ACGHIJKL":"HJICAGLK","ACFHIJKL":"HJICAFLK","ACFGIJKL":"IGJCAFLK","ACFGHJKL":"HGJCAFLK","ACFGHIKL":"HGICAFLK","ACFGHIJL":"HGJCAFLI","ACFGHIJK":"HGJCAFIK","ACEHIJKL":"EJICAHLK","ACEGIJKL":"EJICAGLK","ACEGHJKL":"EGJCAHLK","ACEGHIKL":"EGICAHLK","ACEGHIJL":"EGJCAHLI","ACEGHIJK":"EGJCAHIK","ACEFIJKL":"EJICAFLK","ACEFHJKL":"HJECAFLK","ACEFHIKL":"HEICAFLK","ACEFHIJL":"HJECAFLI","ACEFHIJK":"HJECAFIK","ACEFGJKL":"EGJCAFLK","ACEFGIKL":"EGICAFLK","ACEFGIJL":"EGJCAFLI","ACEFGIJK":"EGJCAFIK","ACEFGHKL":"HGECAFLK","ACEFGHJL":"HGJCAFLE","ACEFGHJK":"HGJCAFEK","ACEFGHIL":"HGECAFLI","ACEFGHIK":"HGECAFIK","ACEFGHIJ":"HGJCAFEI","ACDHIJKL":"HJICADLK","ACDGIJKL":"IGJCADLK","ACDGHJKL":"HGJCADLK","ACDGHIKL":"HGICADLK","ACDGHIJL":"HGJCADLI","ACDGHIJK":"HGJCADIK","ACDFIJKL":"CJIDAFLK","ACDFHJKL":"HJFCADLK","ACDFHIKL":"HFICADLK","ACDFHIJL":"HJFCADLI","ACDFHIJK":"HJFCADIK","ACDFGJKL":"CGJDAFLK","ACDFGIKL":"CGIDAFLK","ACDFGIJL":"CGJDAFLI","ACDFGIJK":"CGJDAFIK","ACDFGHKL":"HGFCADLK","ACDFGHJL":"CGJDAFLH","ACDFGHJK":"HGJCAFDK","ACDFGHIL":"HGFCADLI","ACDFGHIK":"HGFCADIK","ACDFGHIJ":"HGJCAFDI","ACDEIJKL":"EJICADLK","ACDEHJKL":"HJECADLK","ACDEHIKL":"HEICADLK","ACDEHIJL":"HJECADLI","ACDEHIJK":"HJECADIK","ACDEGJKL":"EGJCADLK","ACDEGIKL":"EGICADLK","ACDEGIJL":"EGJCADLI","ACDEGIJK":"EGJCADIK","ACDEGHKL":"HGECADLK","ACDEGHJL":"HGJCADLE","ACDEGHJK":"HGJCADEK","ACDEGHIL":"HGECADLI","ACDEGHIK":"HGECADIK","ACDEGHIJ":"HGJCADEI","ACDEFJKL":"CJEDAFLK","ACDEFIKL":"CEIDAFLK","ACDEFIJL":"CJEDAFLI","ACDEFIJK":"CJEDAFIK","ACDEFHKL":"HEFCADLK","ACDEFHJL":"HJFCADLE","ACDEFHJK":"HJECAFDK","ACDEFHIL":"HEFCADLI","ACDEFHIK":"HEFCADIK","ACDEFHIJ":"HJECAFDI","ACDEFGKL":"CGEDAFLK","ACDEFGJL":"CGJDAFLE","ACDEFGJK":"CGJDAFEK","ACDEFGIL":"CGEDAFLI","ACDEFGIK":"CGEDAFIK","ACDEFGIJ":"CGJDAFEI","ACDEFGHL":"HGFCADLE","ACDEFGHK":"HGECAFDK","ACDEFGHJ":"HGJCAFDE","ACDEFGHI":"HGECAFDI","ABGHIJKL":"HJBAIGLK","ABFHIJKL":"HJBAIFLK","ABFGIJKL":"IJBFAGLK","ABFGHJKL":"HJBFAGLK","ABFGHIKL":"HGBAIFLK","ABFGHIJL":"HJBFAGLI","ABFGHIJK":"HJBFAGIK","ABEHIJKL":"EJBAIHLK","ABEGIJKL":"EJBAIGLK","ABEGHJKL":"EJBAHGLK","ABEGHIKL":"EGBAIHLK","ABEGHIJL":"EJBAHGLI","ABEGHIJK":"EJBAHGIK","ABEFIJKL":"EJBAIFLK","ABEFHJKL":"EJBFAHLK","ABEFHIKL":"EIBFAHLK","ABEFHIJL":"EJBFAHLI","ABEFHIJK":"EJBFAHIK","ABEFGJKL":"EJBFAGLK","ABEFGIKL":"EGBAIFLK","ABEFGIJL":"EJBFAGLI","ABEFGIJK":"EJBFAGIK","ABEFGHKL":"EGBFAHLK","ABEFGHJL":"HJBFAGLE","ABEFGHJK":"HJBFAGEK","ABEFGHIL":"EGBFAHLI","ABEFGHIK":"EGBFAHIK","ABEFGHIJ":"HJBFAGEI","ABDHIJKL":"IJBDAHLK","ABDGIJKL":"IJBDAGLK","ABDGHJKL":"HJBDAGLK","ABDGHIKL":"IGBDAHLK","ABDGHIJL":"HJBDAGLI","ABDGHIJK":"HJBDAGIK","ABDFIJKL":"IJBDAFLK","ABDFHJKL":"HJBDAFLK","ABDFHIKL":"HIBDAFLK","ABDFHIJL":"HJBDAFLI","ABDFHIJK":"HJBDAFIK","ABDFGJKL":"FJBDAGLK","ABDFGIKL":"IGBDAFLK","ABDFGIJL":"FJBDAGLI","ABDFGIJK":"FJBDAGIK","ABDFGHKL":"HGBDAFLK","ABDFGHJL":"HGBDAFLJ","ABDFGHJK":"HGBDAFJK","ABDFGHIL":"HGBDAFLI","ABDFGHIK":"HGBDAFIK","ABDFGHIJ":"HGBDAFIJ","ABDEIJKL":"EJBAIDLK","ABDEHJKL":"EJBDAHLK","ABDEHIKL":"EIBDAHLK","ABDEHIJL":"EJBDAHLI","ABDEHIJK":"EJBDAHIK","ABDEGJKL":"EJBDAGLK","ABDEGIKL":"EGBAIDLK","ABDEGIJL":"EJBDAGLI","ABDEGIJK":"EJBDAGIK","ABDEGHKL":"EGBDAHLK","ABDEGHJL":"HJBDAGLE","ABDEGHJK":"HJBDAGEK","ABDEGHIL":"EGBDAHLI","ABDEGHIK":"EGBDAHIK","ABDEGHIJ":"HJBDAGEI","ABDEFJKL":"EJBDAFLK","ABDEFIKL":"EIBDAFLK","ABDEFIJL":"EJBDAFLI","ABDEFIJK":"EJBDAFIK","ABDEFHKL":"HEBDAFLK","ABDEFHJL":"HJBDAFLE","ABDEFHJK":"HJBDAFEK","ABDEFHIL":"HEBDAFLI","ABDEFHIK":"HEBDAFIK","ABDEFHIJ":"HJBDAFEI","ABDEFGKL":"EGBDAFLK","ABDEFGJL":"EGBDAFLJ","ABDEFGJK":"EGBDAFJK","ABDEFGIL":"EGBDAFLI","ABDEFGIK":"EGBDAFIK","ABDEFGIJ":"EGBDAFIJ","ABDEFGHL":"HGBDAFLE","ABDEFGHK":"HGBDAFEK","ABDEFGHJ":"HGBDAFEJ","ABDEFGHI":"HGBDAFEI","ABCHIJKL":"IJBCAHLK","ABCGIJKL":"IJBCAGLK","ABCGHJKL":"HJBCAGLK","ABCGHIKL":"IGBCAHLK","ABCGHIJL":"HJBCAGLI","ABCGHIJK":"HJBCAGIK","ABCFIJKL":"IJBCAFLK","ABCFHJKL":"HJBCAFLK","ABCFHIKL":"HIBCAFLK","ABCFHIJL":"HJBCAFLI","ABCFHIJK":"HJBCAFIK","ABCFGJKL":"CJBFAGLK","ABCFGIKL":"IGBCAFLK","ABCFGIJL":"CJBFAGLI","ABCFGIJK":"CJBFAGIK","ABCFGHKL":"HGBCAFLK","ABCFGHJL":"HGBCAFLJ","ABCFGHJK":"HGBCAFJK","ABCFGHIL":"HGBCAFLI","ABCFGHIK":"HGBCAFIK","ABCFGHIJ":"HGBCAFIJ","ABCEIJKL":"EJBAICLK","ABCEHJKL":"EJBCAHLK","ABCEHIKL":"EIBCAHLK","ABCEHIJL":"EJBCAHLI","ABCEHIJK":"EJBCAHIK","ABCEGJKL":"EJBCAGLK","ABCEGIKL":"EGBAICLK","ABCEGIJL":"EJBCAGLI","ABCEGIJK":"EJBCAGIK","ABCEGHKL":"EGBCAHLK","ABCEGHJL":"HJBCAGLE","ABCEGHJK":"HJBCAGEK","ABCEGHIL":"EGBCAHLI","ABCEGHIK":"EGBCAHIK","ABCEGHIJ":"HJBCAGEI","ABCEFJKL":"EJBCAFLK","ABCEFIKL":"EIBCAFLK","ABCEFIJL":"EJBCAFLI","ABCEFIJK":"EJBCAFIK","ABCEFHKL":"HEBCAFLK","ABCEFHJL":"HJBCAFLE","ABCEFHJK":"HJBCAFEK","ABCEFHIL":"HEBCAFLI","ABCEFHIK":"HEBCAFIK","ABCEFHIJ":"HJBCAFEI","ABCEFGKL":"EGBCAFLK","ABCEFGJL":"EGBCAFLJ","ABCEFGJK":"EGBCAFJK","ABCEFGIL":"EGBCAFLI","ABCEFGIK":"EGBCAFIK","ABCEFGIJ":"EGBCAFIJ","ABCEFGHL":"HGBCAFLE","ABCEFGHK":"HGBCAFEK","ABCEFGHJ":"HGBCAFEJ","ABCEFGHI":"HGBCAFEI","ABCDIJKL":"IJBCADLK","ABCDHJKL":"HJBCADLK","ABCDHIKL":"HIBCADLK","ABCDHIJL":"HJBCADLI","ABCDHIJK":"HJBCADIK","ABCDGJKL":"CJBDAGLK","ABCDGIKL":"IGBCADLK","ABCDGIJL":"CJBDAGLI","ABCDGIJK":"CJBDAGIK","ABCDGHKL":"HGBCADLK","ABCDGHJL":"HGBCADLJ","ABCDGHJK":"HGBCADJK","ABCDGHIL":"HGBCADLI","ABCDGHIK":"HGBCADIK","ABCDGHIJ":"HGBCADIJ","ABCDFJKL":"CJBDAFLK","ABCDFIKL":"CIBDAFLK","ABCDFIJL":"CJBDAFLI","ABCDFIJK":"CJBDAFIK","ABCDFHKL":"HFBCADLK","ABCDFHJL":"CJBDAFLH","ABCDFHJK":"HJBCAFDK","ABCDFHIL":"HFBCADLI","ABCDFHIK":"HFBCADIK","ABCDFHIJ":"HJBCAFDI","ABCDFGKL":"CGBDAFLK","ABCDFGJL":"CGBDAFLJ","ABCDFGJK":"CGBDAFJK","ABCDFGIL":"CGBDAFLI","ABCDFGIK":"CGBDAFIK","ABCDFGIJ":"CGBDAFIJ","ABCDFGHL":"CGBDAFLH","ABCDFGHK":"HGBCAFDK","ABCDFGHJ":"HGBCAFDJ","ABCDFGHI":"HGBCAFDI","ABCDEJKL":"EJBCADLK","ABCDEIKL":"EIBCADLK","ABCDEIJL":"EJBCADLI","ABCDEIJK":"EJBCADIK","ABCDEHKL":"HEBCADLK","ABCDEHJL":"HJBCADLE","ABCDEHJK":"HJBCADEK","ABCDEHIL":"HEBCADLI","ABCDEHIK":"HEBCADIK","ABCDEHIJ":"HJBCADEI","ABCDEGKL":"EGBCADLK","ABCDEGJL":"EGBCADLJ","ABCDEGJK":"EGBCADJK","ABCDEGIL":"EGBCADLI","ABCDEGIK":"EGBCADIK","ABCDEGIJ":"EGBCADIJ","ABCDEGHL":"HGBCADLE","ABCDEGHK":"HGBCADEK","ABCDEGHJ":"HGBCADEJ","ABCDEGHI":"HGBCADEI","ABCDEFKL":"CEBDAFLK","ABCDEFJL":"CJBDAFLE","ABCDEFJK":"CJBDAFEK","ABCDEFIL":"CEBDAFLI","ABCDEFIK":"CEBDAFIK","ABCDEFIJ":"CJBDAFEI","ABCDEFHL":"HFBCADLE","ABCDEFHK":"HEBCAFDK","ABCDEFHJ":"HJBCAFDE","ABCDEFHI":"HEBCAFDI","ABCDEFGL":"CGBDAFLE","ABCDEFGK":"CGBDAFEK","ABCDEFGJ":"CGBDAFEJ","ABCDEFGI":"CGBDAFEI","ABCDEFGH":"HGBCAFDE"},"r32":{"73":["RU_A","RU_B"],"74":["W_E","T_74"],"75":["W_F","RU_C"],"76":["W_C","RU_F"],"77":["W_I","T_77"],"78":["RU_E","RU_I"],"79":["W_A","T_79"],"80":["W_L","T_80"],"81":["W_D","T_81"],"82":["W_G","T_82"],"83":["RU_K","RU_L"],"84":["W_H","RU_J"],"85":["W_B","T_85"],"86":["W_J","RU_H"],"87":["W_K","T_87"],"88":["RU_D","RU_G"]},"bracket":{"89":["74","77"],"90":["73","75"],"91":["76","78"],"92":["79","80"],"93":["83","84"],"94":["81","82"],"95":["86","88"],"96":["85","87"],"97":["89","90"],"98":["93","94"],"99":["91","92"],"100":["95","96"],"101":["97","98"],"102":["99","100"],"103":["L101","L102"],"104":["101","102"]},"slotmap":{"1A":"T_79","1B":"T_85","1D":"T_81","1E":"T_74","1G":"T_82","1I":"T_77","1K":"T_87","1L":"T_80"},"slotOrder":["1A","1B","1D","1E","1G","1I","1K","1L"]};
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+/* ============================================================
+   FIREBASE CONFIG  (Richard's project)
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyD66JO-6eI33rhwgzSwYD1AVPwpeR4f7zk",
+  authDomain: "world-cup-league-1599a.firebaseapp.com",
+  projectId: "world-cup-league-1599a",
+  storageBucket: "world-cup-league-1599a.firebasestorage.app",
+  messagingSenderId: "106750357999",
+  appId: "1:106750357999:web:002566f63767f284aa861a"
+};
+let db=null, fbReady=false, fbError=null;
+try{
+  firebase.initializeApp(firebaseConfig);
+  db=firebase.firestore();
+  firebase.auth().signInAnonymously().then(()=>{fbReady=true;}).catch(e=>{fbError=e.message;});
+}catch(e){ fbError=e.message; }
+
+/* ============================================================
+   STATIC DATA
+   ============================================================ */
+const FLAGS={"Mexico":"🇲🇽","South Africa":"🇿🇦","South Korea":"🇰🇷","Czech Republic":"🇨🇿","Canada":"🇨🇦","Bosnia & Herzegovina":"🇧🇦","Qatar":"🇶🇦","Switzerland":"🇨🇭","Brazil":"🇧🇷","Morocco":"🇲🇦","Haiti":"🇭🇹","Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","United States":"🇺🇸","Paraguay":"🇵🇾","Australia":"🇦🇺","Turkey":"🇹🇷","Germany":"🇩🇪","Curaçao":"🇨🇼","Ivory Coast":"🇨🇮","Ecuador":"🇪🇨","Netherlands":"🇳🇱","Japan":"🇯🇵","Sweden":"🇸🇪","Tunisia":"🇹🇳","Belgium":"🇧🇪","Egypt":"🇪🇬","Iran":"🇮🇷","New Zealand":"🇳🇿","Spain":"🇪🇸","Cape Verde":"🇨🇻","Saudi Arabia":"🇸🇦","Uruguay":"🇺🇾","France":"🇫🇷","Senegal":"🇸🇳","Iraq":"🇮🇶","Norway":"🇳🇴","Argentina":"🇦🇷","Algeria":"🇩🇿","Austria":"🇦🇹","Jordan":"🇯🇴","Portugal":"🇵🇹","DR Congo":"🇨🇩","Uzbekistan":"🇺🇿","Colombia":"🇨🇴","England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Croatia":"🇭🇷","Ghana":"🇬🇭","Panama":"🇵🇦"};
+const GROUPS={A:["Mexico","South Africa","South Korea","Czech Republic"],B:["Canada","Bosnia & Herzegovina","Qatar","Switzerland"],C:["Brazil","Morocco","Haiti","Scotland"],D:["United States","Paraguay","Australia","Turkey"],E:["Germany","Curaçao","Ivory Coast","Ecuador"],F:["Netherlands","Japan","Sweden","Tunisia"],G:["Belgium","Egypt","Iran","New Zealand"],H:["Spain","Cape Verde","Saudi Arabia","Uruguay"],I:["France","Senegal","Iraq","Norway"],J:["Argentina","Algeria","Austria","Jordan"],K:["Portugal","DR Congo","Uzbekistan","Colombia"],L:["England","Croatia","Ghana","Panama"]};
+const GL=Object.keys(GROUPS);
+const ALL_TEAMS=Object.values(GROUPS).flat().sort();
+function fixturesFor(g){const t=GROUPS[g];return [[t[0],t[1]],[t[2],t[3]],[t[0],t[2]],[t[3],t[1]],[t[3],t[0]],[t[1],t[2]]];}
+// Best-effort likely attacking/notable players per nation for the Golden Boot picker.
+// NOTE: real 2026 squads are confirmed just before the tournament, so these are indicative.
+// The picker always offers "Other (type a name)" so any player can be chosen.
+const SQUADS={
+"Argentina":["Lionel Messi","Julián Álvarez","Lautaro Martínez","Ángel Di María","Nicolás González","Alejandro Garnacho"],
+"France":["Kylian Mbappé","Ousmane Dembélé","Marcus Thuram","Randal Kolo Muani","Bradley Barcola","Michael Olise"],
+"Brazil":["Vinícius Júnior","Rodrygo","Raphinha","Endrick","Gabriel Martinelli","Richarlison"],
+"England":["Harry Kane","Bukayo Saka","Phil Foden","Jude Bellingham","Cole Palmer","Anthony Gordon"],
+"Spain":["Lamine Yamal","Nico Williams","Álvaro Morata","Dani Olmo","Mikel Oyarzabal","Ferran Torres"],
+"Portugal":["Cristiano Ronaldo","Rafael Leão","Bruno Fernandes","Gonçalo Ramos","Bernardo Silva","João Félix"],
+"Germany":["Kai Havertz","Jamal Musiala","Florian Wirtz","Niclas Füllkrug","Leroy Sané","Serge Gnabry"],
+"Netherlands":["Memphis Depay","Cody Gakpo","Donyell Malen","Wout Weghorst","Xavi Simons","Brian Brobbey"],
+"Belgium":["Romelu Lukaku","Kevin De Bruyne","Jérémy Doku","Leandro Trossard","Charles De Ketelaere","Loïs Openda"],
+"Croatia":["Andrej Kramarić","Bruno Petković","Ante Budimir","Luka Modrić","Mario Pašalić","Igor Matanović"],
+"Uruguay":["Darwin Núñez","Federico Valverde","Facundo Pellistri","Maxi Araújo","Rodrigo Aguirre","Brian Rodríguez"],
+"Colombia":["Luis Díaz","Jhon Córdoba","Rafael Santos Borré","James Rodríguez","Jhon Durán","Luis Sinisterra"],
+"Mexico":["Santiago Giménez","Raúl Jiménez","Hirving Lozano","Alexis Vega","Henry Martín","César Huerta"],
+"United States":["Christian Pulisic","Folarin Balogun","Ricardo Pepi","Timothy Weah","Brenden Aaronson","Josh Sargent"],
+"Canada":["Jonathan David","Cyle Larin","Tani Oluwaseyi","Jacob Shaffelburg","Alphonso Davies","Cucho Hernández"],
+"Morocco":["Youssef En-Nesyri","Brahim Díaz","Hakim Ziyech","Ayoub El Kaabi","Soufiane Rahimi","Amine Adli"],
+"Japan":["Kaoru Mitoma","Takefusa Kubo","Ayase Ueda","Daizen Maeda","Junya Ito","Koki Ogawa"],
+"South Korea":["Son Heung-min","Hwang Hee-chan","Cho Gue-sung","Oh Hyeon-gyu","Lee Kang-in","Hwang Ui-jo"],
+"Switzerland":["Breel Embolo","Zeki Amdouni","Dan Ndoye","Ruben Vargas","Steven Zuber","Noah Okafor"],
+"Senegal":["Sadio Mané","Nicolas Jackson","Boulaye Dia","Habib Diallo","Iliman Ndiaye","Ismaïla Sarr"],
+"Ivory Coast":["Sébastien Haller","Wilfried Singo","Simon Adingra","Nicolas Pépé","Jean-Philippe Krasso","Amad Diallo"],
+"Ecuador":["Enner Valencia","Kendry Páez","Leonardo Campana","Gonzalo Plata","Kevin Rodríguez","Jeremy Sarmiento"],
+"Australia":["Mitchell Duke","Kusini Yengi","Bruno Fornaroli","Martin Boyle","Craig Goodwin","Sammy Silvera"],
+"Norway":["Erling Haaland","Alexander Sørloth","Antonio Nusa","Oscar Bobb","Jørgen Strand Larsen","Mohamed Elyounoussi"],
+"Austria":["Marko Arnautović","Michael Gregoritsch","Marcel Sabitzer","Christoph Baumgartner","Patrick Wimmer","Maximilian Entrup"],
+"Sweden":["Alexander Isak","Viktor Gyökeres","Anthony Elanga","Dejan Kulusevski","Emil Forsberg","Jesper Karlström"],
+"Egypt":["Mohamed Salah","Omar Marmoush","Mostafa Mohamed","Trezeguet","Mahmoud Hassan","Mohamed Sherif"],
+"Turkey":["Kenan Yıldız","Arda Güler","Hakan Çalhanoğlu","Cenk Tosun","Barış Alper Yılmaz","Yunus Akgün"],
+"Scotland":["Che Adams","Lyndon Dykes","John McGinn","Scott McTominay","Ryan Christie","Tommy Conway"],
+"Algeria":["Riyad Mahrez","Islam Slimani","Baghdad Bounedjah","Mohamed Amoura","Saïd Benrahma","Amine Gouiri"],
+"Tunisia":["Wahbi Khazri","Youssef Msakni","Naïm Sliti","Seifeddine Jaziri","Hannibal Mejbri","Elyes Skhiri"],
+"Iran":["Mehdi Taremi","Sardar Azmoun","Alireza Jahanbakhsh","Karim Ansarifard","Saman Ghoddos","Shahriyar Moghanlou"],
+"Paraguay":["Miguel Almirón","Antonio Sanabria","Julio Enciso","Adam Bareiro","Ramón Sosa","Gabriel Ávalos"],
+"Qatar":["Almoez Ali","Akram Afif","Hassan Al-Haydos","Yusuf Abdurisag","Ahmed Alaaeldin","Mohammed Muntari"],
+"Saudi Arabia":["Salem Al-Dawsari","Firas Al-Buraikan","Saleh Al-Shehri","Abdullah Al-Hamdan","Feras Albrikan","Saud Abdulhamid"],
+"Iraq":["Aymen Hussein","Mohanad Ali","Ali Al-Hamadi","Amjad Attwan","Zidane Iqbal","Ibrahim Bayesh"],
+"Jordan":["Mousa Al-Taamari","Yazan Al-Naimat","Ali Olwan","Mahmoud Al-Mardi","Nizar Al-Rashdan","Hamza Al-Dardour"],
+"Uzbekistan":["Eldor Shomurodov","Igor Sergeev","Jaloliddin Masharipov","Oston Urunov","Abbosbek Fayzullaev","Khojimat Erkinov"],
+"New Zealand":["Chris Wood","Ben Old","Kosta Barbarouses","Eli Just","Matthew Garbett","Sarpreet Singh"],
+"Ghana":["Mohammed Kudus","Iñaki Williams","Jordan Ayew","Antoine Semenyo","Ernest Nuamah","Kamaldeen Sulemana"],
+"DR Congo":["Cédric Bakambu","Yoane Wissa","Silas Katompa","Meschack Elia","Fiston Mayele","Simon Banza"],
+"South Africa":["Percy Tau","Lyle Foster","Themba Zwane","Evidence Makgopa","Mihlali Mayambela","Iqraam Rayners"],
+"Cape Verde":["Garry Rodrigues","Ryan Mendes","Bebé","Júlio Tavares","Gilson Tavares","Dailon Livramento"],
+"Panama":["José Fajardo","Ismael Díaz","Cecilio Waterman","Érick Sánchez","Eduardo Guerrero","Tomás Rodríguez"],
+"Haiti":["Frantzdy Pierrot","Duckens Nazon","Don Deedson Louicius","Danley Jean Jacques","Ruben Providence","Josué Casimir"],
+"Curaçao":["Leandro Bacuna","Tahith Chong","Juninho Bacuna","Kenji Gorré","Gervane Kastaneer","Cuco Martina"],
+"Bosnia & Herzegovina":["Edin Džeko","Ermedin Demirović","Smail Prevljak","Haris Tabaković","Said Hamulić","Armin Gigović"],
+"Czech Republic":["Patrik Schick","Adam Hložek","Mojmír Chytil","Tomáš Chorý","Václav Černý","Jan Kuchta"]
+};
+const KO_NAMES={r32:"Round of 32",r16:"Round of 16",qf:"Quarter-finals",sf:"Semi-finals",f:"Final"};
+const R32_MATCHES=["73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88"];
+const R16_MATCHES=["89","90","91","92","93","94","95","96"];
+const QF_MATCHES=["97","98","99","100"];
+const SF_MATCHES=["101","102"];
+const F_MATCHES=["104"];
+const KO_LIST={r32:R32_MATCHES,r16:R16_MATCHES,qf:QF_MATCHES,sf:SF_MATCHES,f:F_MATCHES};
+const STAGES=["groups","r32","r16","qf","sf","f"];
+const STAGE_LABEL={groups:"Groups",r32:"R32",r16:"R16",qf:"QF",sf:"SF",f:"Final"};
+
+/* ============================================================
+   GROUP TABLE ENGINE
+   ============================================================ */
+function computeGroupTable(g,res){
+  const teams=GROUPS[g];const row={};teams.forEach((t,i)=>row[t]={team:t,pos:i,pld:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0});
+  fixturesFor(g).forEach((m,mi)=>{const s=res.group[`${g}-${mi}`];if(!s||s.h==null||s.a==null)return;const[hT,aT]=m,h=+s.h,a=+s.a;
+    row[hT].pld++;row[aT].pld++;row[hT].gf+=h;row[hT].ga+=a;row[aT].gf+=a;row[aT].ga+=h;
+    if(h>a){row[hT].w++;row[aT].l++;row[hT].pts+=3;}else if(a>h){row[aT].w++;row[hT].l++;row[aT].pts+=3;}else{row[hT].d++;row[aT].d++;row[hT].pts++;row[aT].pts++;}});
+  teams.forEach(t=>row[t].gd=row[t].gf-row[t].ga);
+  const arr=Object.values(row);arr.sort((x,y)=>y.pts-x.pts||y.gd-x.gd||y.gf-x.gf||x.pos-y.pos);return arr;
+}
+function groupComplete(g,res){return fixturesFor(g).every((m,mi)=>{const s=res.group[`${g}-${mi}`];return s&&s.h!=null&&s.a!=null;});}
+function allGroupsComplete(res){return GL.every(g=>groupComplete(g,res));}
+function thirdPlaceRanking(res){const t=GL.map(g=>{const r=computeGroupTable(g,res)[2];return{...r,group:g};});t.sort((x,y)=>y.pts-x.pts||y.gd-x.gd||y.gf-x.gf||x.group.localeCompare(y.group));return t;}
+
+/* ============================================================
+   AUTO-BRACKET ENGINE
+   ============================================================ */
+function winnerOf(mid,res){const s=res.ko[mid];if(!s||s.a==null||s.b==null)return null;if(+s.a>+s.b)return s.aTeam;if(+s.b>+s.a)return s.bTeam;if(s.pa!=null&&s.pb!=null&&+s.pa!==+s.pb)return(+s.pa>+s.pb)?s.aTeam:s.bTeam;return null;}
+function loserOf(mid,res){const s=res.ko[mid];if(!s||s.a==null||s.b==null)return null;const w=winnerOf(mid,res);if(!w)return null;return w===s.aTeam?s.bTeam:s.aTeam;}
+function resolveR32(res){
+  const tables={};GL.forEach(g=>tables[g]=computeGroupTable(g,res));const complete=allGroupsComplete(res);
+  let slotFill=null;
+  if(complete){const thirds=thirdPlaceRanking(res).slice(0,8).map(t=>t.group);const key=thirds.slice().sort().join("");const packed=WC_DATA.combos[key];if(packed){slotFill={};WC_DATA.slotOrder.forEach((s,i)=>slotFill[s]=packed[i]);}}
+  function tok(t){if(!complete)return null;if(t.startsWith("W_"))return tables[t[2]][0].team;if(t.startsWith("RU_"))return tables[t[3]][1].team;if(t.startsWith("T_")){if(!slotFill)return null;const slot=Object.keys(WC_DATA.slotmap).find(s=>WC_DATA.slotmap[s]===t);return slotFill[slot]?tables[slotFill[slot]][2].team:null;}return null;}
+  const out={};R32_MATCHES.forEach(mid=>{const[x,y]=WC_DATA.r32[mid];out[mid]={aTeam:tok(x),bTeam:tok(y),aTok:x,bTok:y};});
+  return {out,complete};
+}
+function resolveLater(round,res){const out={};KO_LIST[round].forEach(mid=>{const[x,y]=WC_DATA.bracket[mid];const a=x[0]==="L"?loserOf(x.slice(1),res):winnerOf(x,res);const b=y[0]==="L"?loserOf(y.slice(1),res):winnerOf(y,res);out[mid]={aTeam:a,bTeam:b,aTok:x,bTok:y};});return out;}
+function resolveStage(stage,res){return stage==="r32"?resolveR32(res).out:resolveLater(stage,res);}
+
+/* ============================================================
+   STAGE LOCK / UNLOCK LOGIC
+   A prediction stage LOCKS when its first real result appears,
+   OR when the fixed tournament lock time passes (whichever first).
+   A later stage UNLOCKS only when the previous stage's results are fully entered.
+   ============================================================ */
+// Fixed lock times (UK clock). BST = UTC+1, so 20:00 BST = 19:00 UTC.
+// Each stage's predictions lock at its time, OR when its first real result is entered (whichever first).
+const STAGE_LOCK_MS = {
+  groups: Date.parse("2026-06-11T19:00:00Z"), // 20:00 BST Thu 11 Jun
+  r32:    Date.parse("2026-06-28T19:00:00Z"), // 20:00 BST Sun 28 Jun
+  r16:    Date.parse("2026-07-04T17:00:00Z"), // 18:00 BST Sat 04 Jul
+  qf:     Date.parse("2026-07-09T19:00:00Z"), // 20:00 BST Thu 09 Jul
+  sf:     Date.parse("2026-07-14T19:00:00Z"), // 20:00 BST Tue 14 Jul
+  f:      Date.parse("2026-07-18T21:00:00Z")  // 22:00 BST Sat 18 Jul (3rd-place + Final lock together)
+};
+const TOURNAMENT_LOCK_MS = STAGE_LOCK_MS.groups;
+function tournamentStarted(){return Date.now() >= TOURNAMENT_LOCK_MS;}
+function stageTimeLocked(stage){const t=STAGE_LOCK_MS[stage];return t!=null && Date.now()>=t;}
+// Golden picks (champion + top scorer) lock at kick-off, or once any group result is in.
+function goldenLocked(res){return tournamentStarted() || stageHasAnyResult("groups",res);}
+function stageHasAnyResult(stage,res){
+  if(stage==="groups")return Object.values(res.group).some(s=>s&&s.h!=null&&s.a!=null);
+  return KO_LIST[stage].some(mid=>{const s=res.ko[mid];return s&&s.a!=null&&s.b!=null;});
+}
+function stageResultsComplete(stage,res){
+  if(stage==="groups")return allGroupsComplete(res);
+  return KO_LIST[stage].every(mid=>{const s=res.ko[mid];return s&&s.a!=null&&s.b!=null;});
+}
+// Predictions for a stage are LOCKED once its fixed time passes, OR once real results for it start.
+function predLocked(stage,res){
+  if(stageTimeLocked(stage))return true;
+  return stageHasAnyResult(stage,res);
+}
+// A stage is UNLOCKED for prediction if it's groups, or the previous stage's results are complete
+function stageUnlocked(stage,res){
+  if(stage==="groups")return true;
+  const prev=STAGES[STAGES.indexOf(stage)-1];
+  return stageResultsComplete(prev,res);
+}
+function stageStatus(stage,res){
+  if(!stageUnlocked(stage,res))return "waiting";   // previous round not done
+  if(predLocked(stage,res))return "locked";        // results started or kickoff passed
+  return "open";                                    // predict now
+}
+
+/* ============================================================
+   SCORING
+   ============================================================ */
+function scoreLine(ph,pa,ah,aa){
+  if(ph==null||pa==null||ah==null||aa==null)return null;
+  if(+ph===+ah&&+pa===+aa)return 6;
+  const pr=Math.sign(ph-pa),ar=Math.sign(ah-aa);
+  return pr===ar?3:0;
+}
+function norm(s){return (s||"").trim().toLowerCase();}
+function scorePlayer(pred,res,actualScorer){
+  let total=0,exact=0,result=0,golden=0,gPts=0,koPts=0;
+  GL.forEach(g=>fixturesFor(g).forEach((m,mi)=>{const id=`${g}-${mi}`;const p=pred.group[id],a=res.group[id];if(!p||!a)return;const pts=scoreLine(p.h,p.a,a.h,a.a);if(pts!=null){total+=pts;gPts+=pts;if(pts===6)exact++;else if(pts===3)result++;}}));
+  Object.keys(KO_NAMES).forEach(rk=>KO_LIST[rk].forEach(mid=>{
+    const p=pred.ko[mid],a=res.ko[mid];
+    if(!p||!a||a.a==null||a.b==null||p.a==null||p.b==null)return;
+    if(!p.aTeam||!p.bTeam||!a.aTeam||!a.bTeam)return;
+    let pl;
+    if(p.aTeam===a.aTeam&&p.bTeam===a.bTeam)pl=scoreLine(p.a,p.b,a.a,a.b);
+    else if(p.aTeam===a.bTeam&&p.bTeam===a.aTeam)pl=scoreLine(p.b,p.a,a.a,a.b);
+    else return;
+    if(pl!=null){total+=pl;koPts+=pl;if(pl===6)exact++;else if(pl===3)result++;}
+  }));
+  const champ=winnerOf("104",res);
+  if(pred.winner&&champ&&pred.winner===champ){total+=10;golden+=10;}
+  if(pred.scorer&&actualScorer&&norm(pred.scorer)===norm(actualScorer)){total+=10;golden+=10;}
+  return {total,exact,result,golden,gPts,koPts};
+}
+
+/* ============================================================
+   LOCAL STATE  (identity + cache; source of truth is Firestore)
+   ============================================================ */
+const LS="wc26_league_app_v1";
+// local = ACTIVE membership {leagueId, playerId, isScorer}
+// memberships = ALL leagues this device belongs to [{leagueId, playerId, isScorer, name}]
+let local={leagueId:"",playerId:"",isScorer:false};
+let memberships=[];
+(function initLocal(){
+  let saved=null;
+  try{saved=JSON.parse(localStorage.getItem(LS));}catch(e){}
+  if(saved){
+    if(Array.isArray(saved.memberships)){
+      memberships=saved.memberships;
+      local=saved.active||memberships[0]||{leagueId:"",playerId:"",isScorer:false};
+    }else if(saved.leagueId){
+      // migrate old single-membership format
+      local={leagueId:saved.leagueId,playerId:saved.playerId,isScorer:!!saved.isScorer};
+      memberships=[{leagueId:local.leagueId,playerId:local.playerId,isScorer:local.isScorer,name:""}];
+    }
+  }
+})();
+function saveLocal(){
+  try{
+    // keep active flags in sync inside the memberships list
+    const m=memberships.find(x=>x.leagueId===local.leagueId);
+    if(m){m.playerId=local.playerId;m.isScorer=local.isScorer;}
+    localStorage.setItem(LS,JSON.stringify({active:{leagueId:local.leagueId,playerId:local.playerId,isScorer:local.isScorer},memberships}));
+  }catch(e){}
+}
+function rememberMembership(leagueId,playerId,isScorer,name){
+  const ex=memberships.find(m=>m.leagueId===leagueId);
+  if(ex){ex.playerId=playerId;ex.isScorer=isScorer;if(name)ex.name=name;}
+  else memberships.push({leagueId,playerId,isScorer,name:name||""});
+}
+function forgetMembership(leagueId){memberships=memberships.filter(m=>m.leagueId!==leagueId);}
+
+// In-memory league document
+let LG=null;          // {name, scorerName, scorerPass, results:{group,ko,actualScorer}, players:{pid:{name,pred:{...}}}}
+let unsub=null;       // firestore listener
+let saveTimer=null;
+
+function blankPred(){return {winner:"",scorer:"",scorerCountry:"",group:{},ko:{}};}
+function blankResults(){return {group:{},ko:{},actualScorer:""};}
+
+/* ============================================================
+   FIRESTORE LAYER
+   ============================================================ */
+function leagueRef(id){return db.collection("leagues").doc(id);}
+function randomId(n){const c="ABCDEFGHJKMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<n;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+
+async function waitForFb(){
+  let tries=0;
+  while(!fbReady&&!fbError&&tries<60){await new Promise(r=>setTimeout(r,100));tries++;}
+  if(fbError)throw new Error(fbError);
+  if(!fbReady)throw new Error("Could not connect. Check your internet and try again.");
+}
+
+async function createLeague(leagueName,scorerName,scorerPass){
+  await waitForFb();
+  const id=randomId(6);
+  const pid=randomId(8);
+  const doc={
+    name:leagueName, scorerName:scorerName||"Scorer", scorerPass:scorerPass||"",
+    createdAt:Date.now(),
+    results:blankResults(),
+    players:{[pid]:{name:scorerName||"Scorer",pred:blankPred(),joinedAt:Date.now()}}
+  };
+  await leagueRef(id).set(doc);
+  local={leagueId:id,playerId:pid,isScorer:true};
+  rememberMembership(id,pid,true,scorerName||"Scorer");
+  saveLocal();
+  return id;
+}
+async function joinLeague(id,displayName){
+  await waitForFb();
+  id=id.trim().toUpperCase();
+  // already a member on this device? just switch to it, don't create a duplicate
+  const existing=memberships.find(m=>m.leagueId===id);
+  if(existing){
+    local={leagueId:existing.leagueId,playerId:existing.playerId,isScorer:existing.isScorer};
+    saveLocal();
+    return id;
+  }
+  const snap=await leagueRef(id).get();
+  if(!snap.exists)throw new Error("No league found with that code.");
+  const pid=randomId(8);
+  await leagueRef(id).update({["players."+pid]:{name:displayName,pred:blankPred(),joinedAt:Date.now()}});
+  local={leagueId:id,playerId:pid,isScorer:false};
+  rememberMembership(id,pid,false,displayName);
+  saveLocal();
+  return id;
+}
+// Switch the active league to one we're already a member of
+function switchToLeague(leagueId){
+  const m=memberships.find(x=>x.leagueId===leagueId);
+  if(!m)return;
+  local={leagueId:m.leagueId,playerId:m.playerId,isScorer:m.isScorer};
+  saveLocal();
+  LG=null;
+  ui.mode="predict";
+  listenLeague();
+  render();
+}
+function listenLeague(){
+  if(unsub)unsub();
+  unsub=leagueRef(local.leagueId).onSnapshot(snap=>{
+    if(!snap.exists){toast("League not found");return;}
+    LG=snap.data();
+    if(!LG.results)LG.results=blankResults();
+    if(!LG.players)LG.players={};
+    render();
+  },err=>{toast("Connection issue — tap Refresh");});
+}
+// Scorer tools: delete / rename a player
+async function deletePlayer(pid){
+  await leagueRef(local.leagueId).update({["players."+pid]:firebase.firestore.FieldValue.delete()});
+}
+async function renamePlayer(pid,newName){
+  await leagueRef(local.leagueId).update({["players."+pid+".name"]:newName});
+}
+function myPred(){ if(!LG||!LG.players[local.playerId])return blankPred(); const p=LG.players[local.playerId].pred; return {winner:p.winner||"",scorer:p.scorer||"",scorerCountry:p.scorerCountry||"",group:p.group||{},ko:p.ko||{}}; }
+function myName(){ return LG&&LG.players[local.playerId]?LG.players[local.playerId].name:""; }
+
+// Debounced save of my predictions
+function savePredSoon(){
+  showSave("Saving…");
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    try{
+      await leagueRef(local.leagueId).update({["players."+local.playerId+".pred"]:myPred()});
+      showSave("Saved ✓");
+    }catch(e){showSave("Save failed");}
+  },700);
+}
+async function saveResultsSoon(){
+  showSave("Saving…");
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    try{
+      await leagueRef(local.leagueId).update({results:LG.results});
+      showSave("Saved ✓");
+    }catch(e){showSave("Save failed");}
+  },700);
+}
+let saveStatusTimer;
+function showSave(t){const el=document.getElementById("savestatus");el.textContent=t;el.classList.add("show");clearTimeout(saveStatusTimer);saveStatusTimer=setTimeout(()=>el.classList.remove("show"),1800);}
+
+/* ============================================================
+   UI STATE
+   ============================================================ */
+let ui={mode:"predict",stage:"groups",resStage:"groups"};
+
+/* ============================================================
+   ROUTER
+   ============================================================ */
+function render(){
+  const app=document.getElementById("app");
+  const chip=document.getElementById("leagueChipWrap");
+  // Not in a league yet → lobby
+  if(!local.leagueId||!LG){
+    document.getElementById("savebar").style.display="none";
+    chip.innerHTML="";
+    if(local.leagueId&&!LG){app.innerHTML='<div class="card center"><div class="spin"></div><p class="tiny" style="margin-top:12px;">Loading league…</p></div>';return;}
+    return renderLobby(app);
+  }
+  // In a league
+  document.getElementById("appTitle").innerHTML=esc(LG.name);
+  document.getElementById("appSub").textContent=(local.isScorer?"You are the scorer":"Player")+" · "+myName();
+  document.getElementById("savebar").style.display="block";
+  chip.innerHTML=`<span class="leaguechip">🏆 <b>${esc(LG.name)}</b> · code <b>${esc(local.leagueId)}</b></span>`;
+  // mode tabs
+  const tabs=[["predict","🔮 Predict"],["standings","🏆 Tables"],["leaderboard","📊 League"],["info","ℹ️ Help"]];
+  if(local.isScorer)tabs.splice(1,0,["results","✍️ Results"]);
+  let html=`<div class="modetabs">`+tabs.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div><div id="modeBody"></div>`;
+  app.innerHTML=html;
+  app.querySelectorAll(".modetab").forEach(t=>t.onclick=()=>{ui.mode=t.dataset.mode;render();window.scrollTo({top:0,behavior:"smooth"});});
+  const body=document.getElementById("modeBody");
+  if(ui.mode==="predict")renderPredict(body);
+  else if(ui.mode==="results")renderResults(body);
+  else if(ui.mode==="standings")renderStandings(body);
+  else if(ui.mode==="leaderboard")renderLeaderboard(body);
+  else if(ui.mode==="info")renderInfo(body);
+}
+
+/* ============================================================
+   LOBBY (create / join)
+   ============================================================ */
+function renderLobby(app){
+  const myLeaguesHtml = memberships.length ? `
+    <div class="card reveal">
+      <h2>Your leagues</h2>
+      <p class="lead">Leagues you've joined on this device. Tap to jump in.</p>
+      <div id="myLeagues">${memberships.map(m=>`
+        <div class="lbrow" data-lg="${esc(m.leagueId)}" style="cursor:pointer;">
+          <div class="rank">🏆</div>
+          <div class="nm">${esc(m.name)||"(unnamed)"}<small>code ${esc(m.leagueId)}${m.isScorer?" · you're the scorer":""}</small></div>
+          <div class="sc" style="font-size:15px;color:#8aa0c2;">›</div>
+        </div>`).join("")}</div>
+    </div>` : "";
+  app.innerHTML=`
+    ${myLeaguesHtml}
+    <div class="card reveal">
+      <h2>Join a league</h2>
+      <p class="lead">Enter a league code and pick the name you'll be known by.</p>
+      <label class="fld" for="joinCode">League code</label>
+      <input class="txt" id="joinCode" placeholder="e.g. ABC123" autocomplete="off" style="text-transform:uppercase;">
+      <label class="fld" for="joinName">Your display name</label>
+      <input class="txt" id="joinName" placeholder="e.g. Jacob" autocomplete="off">
+      <button class="btn btn-gold" id="doJoin">Join league</button>
+    </div>
+    <div class="card reveal">
+      <h2>Create a new league</h2>
+      <p class="lead">Start your own competition — for family, work, or friends. You'll be the scorer who enters the real results.</p>
+      <label class="fld" for="newLeague">League name</label>
+      <input class="txt" id="newLeague" placeholder="e.g. The Mander Family Cup" autocomplete="off">
+      <label class="fld" for="newScorer">Your name (the scorer)</label>
+      <input class="txt" id="newScorer" placeholder="e.g. Richard" autocomplete="off">
+      <label class="fld" for="newPass">Scorer passcode</label>
+      <input class="txt" id="newPass" placeholder="choose a simple passcode" autocomplete="off">
+      <p class="hint">You'll need this passcode to enter official results. Share the league code with players, but keep this passcode to yourself.</p>
+      <button class="btn btn-green" id="doCreate">Create league</button>
+    </div>
+    <div class="card reveal">
+      <h2>How scoring works</h2>
+      <div class="rules">
+        <div class="rule"><div class="pts">6</div><div class="d">Exact scoreline correct</div></div>
+        <div class="rule"><div class="pts">3</div><div class="d">Correct result (right winner, or a draw called)</div></div>
+        <div class="rule"><div class="pts">10</div><div class="d">Correct champion · and · correct top scorer</div></div>
+      </div>
+    </div>`;
+  app.querySelectorAll("#myLeagues [data-lg]").forEach(row=>row.onclick=()=>{
+    busy("Opening…");switchToLeague(row.dataset.lg);unbusy();
+  });
+  app.querySelector("#doJoin").onclick=async()=>{
+    const code=app.querySelector("#joinCode").value.trim();
+    const nm=app.querySelector("#joinName").value.trim();
+    if(!code){toast("Enter a league code");return;}
+    if(!nm){toast("Enter your name");return;}
+    busy("Joining league…");
+    try{await joinLeague(code,nm);listenLeague();}catch(e){unbusy();toast(e.message);return;}
+    unbusy();ui.mode="predict";
+  };
+  app.querySelector("#doCreate").onclick=async()=>{
+    const ln=app.querySelector("#newLeague").value.trim();
+    const sn=app.querySelector("#newScorer").value.trim();
+    const pw=app.querySelector("#newPass").value.trim();
+    if(!ln){toast("Name your league");return;}
+    if(!sn){toast("Enter your name");return;}
+    if(!pw){toast("Set a scorer passcode");return;}
+    busy("Creating league…");
+    try{await createLeague(ln,sn,pw);listenLeague();}catch(e){unbusy();toast(e.message);return;}
+    unbusy();ui.mode="predict";toast("League created! Share code "+local.leagueId);
+  };
+}
+
+/* ============================================================
+   PREDICT
+   ============================================================ */
+function renderPredict(host){
+  const res=LG.results, pred=myPred();
+  const gLock=goldenLocked(res);
+  const c=document.createElement("div");c.className="card reveal";
+  // determine current country for the scorer pick (stored, or inferred if the saved name is in a squad)
+  let curCountry=pred.scorerCountry||"";
+  if(!curCountry&&pred.scorer){for(const t of ALL_TEAMS){if((SQUADS[t]||[]).includes(pred.scorer)){curCountry=t;break;}}}
+  const isOther = pred.scorer && curCountry && !(SQUADS[curCountry]||[]).includes(pred.scorer);
+  const countryOpts=`<option value="">— country —</option>`+ALL_TEAMS.map(t=>`<option value="${t}" ${curCountry===t?'selected':''}>${FLAGS[t]||""}  ${t}</option>`).join("");
+  c.innerHTML=`<h2>Golden Picks</h2>
+    <p class="lead">${gLock?"🔒 Locked — these were set before kick-off (20:00, 11 June). Each correct pick is worth 10 points.":"Lock these in before kick-off (20:00, Thu 11 June). Each correct one is worth 10 points — you can change them until then."}</p>
+    <label class="fld">🏆 Champion (+10)</label>
+    <select id="wp" ${gLock?'disabled':''}><option value="">— choose —</option>${ALL_TEAMS.map(t=>`<option value="${t}" ${pred.winner===t?'selected':''}>${FLAGS[t]||""}  ${t}</option>`).join("")}</select>
+    <label class="fld">👟 Top scorer / Golden Boot (+10)</label>
+    <select id="scCountry" ${gLock?'disabled':''}>${countryOpts}</select>
+    <select id="scPlayer" ${gLock?'disabled':''} style="margin-top:8px;"></select>
+    <input class="txt" id="scOther" placeholder="Type player name" style="margin-top:8px;display:none;" ${gLock?'disabled':''}>
+    <p class="hint">Pick the player's country, then the player. Squads aren't final until just before the tournament — if your player isn't listed, choose <b>Other</b> and type the name.</p>`;
+  host.appendChild(c);
+
+  const wp=c.querySelector("#wp"), scCountry=c.querySelector("#scCountry"), scPlayer=c.querySelector("#scPlayer"), scOther=c.querySelector("#scOther");
+  function fillPlayers(country,selectedName){
+    const list=SQUADS[country]||[];
+    scPlayer.innerHTML=`<option value="">— player —</option>`+list.map(p=>`<option value="${esc(p)}" ${p===selectedName?'selected':''}>${esc(p)}</option>`).join("")+`<option value="__OTHER__" ${ (selectedName&&!list.includes(selectedName))?'selected':''}>Other (type a name)…</option>`;
+    scPlayer.style.display=country?"block":"none";
+    const showOther = country && selectedName && !list.includes(selectedName);
+    scOther.style.display=showOther?"block":"none";
+    if(showOther)scOther.value=selectedName;
+  }
+  fillPlayers(curCountry, pred.scorer);
+  if(!curCountry){scPlayer.style.display="none";scOther.style.display="none";}
+
+  if(!gLock){
+    wp.onchange=e=>{LG.players[local.playerId].pred.winner=e.target.value;savePredSoon();};
+    scCountry.onchange=e=>{
+      const ctry=e.target.value;
+      LG.players[local.playerId].pred.scorerCountry=ctry;
+      LG.players[local.playerId].pred.scorer="";  // reset player when country changes
+      fillPlayers(ctry,"");
+      savePredSoon();
+    };
+    scPlayer.onchange=e=>{
+      if(e.target.value==="__OTHER__"){scOther.style.display="block";scOther.value="";scOther.focus();LG.players[local.playerId].pred.scorer="";}
+      else{scOther.style.display="none";LG.players[local.playerId].pred.scorer=e.target.value;}
+      savePredSoon();
+    };
+    scOther.oninput=e=>{LG.players[local.playerId].pred.scorer=e.target.value;savePredSoon();};
+  }
+  // stage chips with lock state
+  const bar=document.createElement("div");bar.className="stagebar";
+  STAGES.forEach(k=>{
+    const st=stageStatus(k,res);
+    const ch=document.createElement("div");ch.className="chip"+(ui.stage===k?" active":"")+(st==="waiting"?" locked":"");
+    let icon=st==="locked"?'<span class="lk">🔒</span>':st==="waiting"?'<span class="lk">⏳</span>':"";
+    ch.innerHTML=STAGE_LABEL[k]+icon;
+    ch.onclick=()=>{ui.stage=k;render();window.scrollTo({top:0,behavior:"smooth"});};
+    bar.appendChild(ch);
+  });
+  host.appendChild(bar);
+  // banner
+  const st=stageStatus(ui.stage,res);
+  const banner=document.createElement("div");
+  if(st==="waiting"){const prev=STAGES[STAGES.indexOf(ui.stage)-1];banner.className="banner wait";banner.innerHTML=`⏳ <b>${KO_NAMES[ui.stage]||"This round"} isn't open yet.</b> It unlocks once all ${STAGE_LABEL[prev]==="Groups"?"group":STAGE_LABEL[prev]} results are entered by ${esc(LG.scorerName)}. You'll see the real matchups here when it opens.`;}
+  else if(st==="locked"){banner.className="banner lock";banner.innerHTML=`🔒 <b>Predictions for this round are locked</b> — the deadline has passed or results are in. Check the League tab to see how you're doing.`;}
+  else{banner.className="banner open";banner.innerHTML=ui.stage==="groups"?`✅ <b>Group stage is open.</b> Predict every scoreline below.`:`✅ <b>${KO_NAMES[ui.stage]} is open!</b> The real matchups are shown — predict the scores.`;}
+  host.appendChild(banner);
+
+  if(st==="waiting")return;
+  if(ui.stage==="groups")return renderPredictGroups(host,res,st);
+  return renderPredictKO(host,ui.stage,res,st);
+}
+function renderPredictGroups(host,res,st){
+  const locked=(st==="locked");
+  GL.forEach(g=>{
+    const h=document.createElement("div");h.className="group-head";h.innerHTML=`<span class="group-tag">Group ${g}</span><span class="gl"></span>`;host.appendChild(h);
+    fixturesFor(g).forEach((m,mi)=>{
+      const id=`${g}-${mi}`,sv=myPred().group[id]||{};
+      const w=document.createElement("div");w.className="match";
+      w.innerHTML=`<div class="mdtag">Matchday ${Math.floor(mi/2)+1}</div>
+        <div class="teams">
+          <div class="team"><span class="flag">${FLAGS[m[0]]||"⚽"}</span><span class="tname">${m[0]}</span></div>
+          <div class="vs"><input class="score" inputmode="numeric" maxlength="2" data-id="${id}" data-s="h" value="${sv.h??""}" ${locked?'disabled':''}><span class="dash">–</span><input class="score" inputmode="numeric" maxlength="2" data-id="${id}" data-s="a" value="${sv.a??""}" ${locked?'disabled':''}></div>
+          <div class="team"><span class="flag">${FLAGS[m[1]]||"⚽"}</span><span class="tname">${m[1]}</span></div>
+        </div><div class="verdict" id="pv-${id}"></div>`;
+      host.appendChild(w);pVerdict(id,m);
+    });
+  });
+  if(!locked)host.querySelectorAll(".score").forEach(inp=>inp.addEventListener("input",e=>{
+    const t=e.target,id=t.dataset.id;t.value=t.value.replace(/[^0-9]/g,"").slice(0,2);
+    const gp=LG.players[local.playerId].pred.group;if(!gp[id])gp[id]={};
+    gp[id][t.dataset.s]=t.value===""?null:+t.value;
+    const m=findGroupMatch(id);pVerdict(id,m);savePredSoon();
+  }));
+}
+function findGroupMatch(id){const[g,mi]=id.split("-");return fixturesFor(g)[+mi];}
+function pVerdict(id,m){const el=document.getElementById("pv-"+id);if(!el)return;const s=myPred().group[id];if(!s||s.h==null||s.a==null){el.textContent="";el.className="verdict";return;}el.textContent=s.h>s.a?`${m[0]} win`:s.a>s.h?`${m[1]} win`:"Draw";el.className="verdict "+(s.h===s.a?"draw":"win");}
+
+function renderPredictKO(host,round,res,st){
+  const locked=(st==="locked");
+  const guide=resolveStage(round,res); // real matchups (this stage is open => prev complete => these resolve)
+  KO_LIST[round].forEach(mid=>{
+    const p=myPred().ko[mid]||{aTeam:"",bTeam:"",a:null,b:null};
+    const gA=guide[mid]?.aTeam,gB=guide[mid]?.bTeam;
+    // In this design, once a round is open the real teams are known, so we show them fixed and ask only for scores.
+    const aT=gA||p.aTeam, bT=gB||p.bTeam;
+    const lbl=round==="f"?"🏆 The Final":`${KO_NAMES[round]} · Match ${mid}`;
+    const b=document.createElement("div");b.className="ko-match";
+    b.innerHTML=`<div class="lbl"><span>${lbl}</span></div>
+      <div class="ko-teams">
+        <div class="ko-side ${aT?'':'tbd'}"><span class="flag">${aT?(FLAGS[aT]||"⚽"):"❓"}</span><span class="tn">${aT||"TBD"}</span></div>
+        <div class="vs"><input class="score" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="a" value="${p.a??""}" ${locked||!aT?'disabled':''}><span class="dash">–</span><input class="score" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="b" value="${p.b??""}" ${locked||!bT?'disabled':''}></div>
+        <div class="ko-side ${bT?'':'tbd'}"><span class="flag">${bT?(FLAGS[bT]||"⚽"):"❓"}</span><span class="tn">${bT||"TBD"}</span></div>
+      </div>`;
+    host.appendChild(b);
+    // persist the resolved team names onto my prediction so scoring can align
+    if(aT||bT){const kp=LG.players[local.playerId].pred.ko;if(!kp[mid])kp[mid]={a:null,b:null};kp[mid].aTeam=aT;kp[mid].bTeam=bT;}
+  });
+  if(!locked)host.querySelectorAll("[data-mid]").forEach(inp=>inp.addEventListener("input",e=>{
+    const t=e.target,mid=t.dataset.mid;t.value=t.value.replace(/[^0-9]/g,"").slice(0,2);
+    const kp=LG.players[local.playerId].pred.ko;if(!kp[mid])kp[mid]={a:null,b:null};
+    kp[mid][t.dataset.f]=t.value===""?null:+t.value;savePredSoon();
+  }));
+}
+
+/* ============================================================
+   RESULTS (scorer only)
+   ============================================================ */
+function renderResults(host){
+  if(!local.isScorer){host.innerHTML='<div class="card">Only the scorer can enter results.</div>';return;}
+  const res=LG.results;
+  const c=document.createElement("div");c.className="card reveal";
+  c.innerHTML=`<span class="step-pill">Scorer</span><h2>Enter Actual Results</h2>
+    <p class="lead">Type real scores as games finish. Group tables update live; the Round of 32 builds itself once all group games are in; later rounds fill from the winners. Entering a round's results <b>locks players' predictions</b> for that round and <b>unlocks the next round</b> for them.</p>`;
+  host.appendChild(c);
+  const bar=document.createElement("div");bar.className="stagebar";
+  STAGES.forEach(k=>{const ch=document.createElement("div");ch.className="chip"+(ui.resStage===k?" active":"");ch.textContent=STAGE_LABEL[k];ch.onclick=()=>{ui.resStage=k;render();window.scrollTo({top:0,behavior:"smooth"});};bar.appendChild(ch);});
+  host.appendChild(bar);
+  // golden boot actual
+  if(ui.resStage==="groups"){
+    const gb=document.createElement("div");gb.className="card reveal";
+    gb.innerHTML=`<label class="fld">👟 Official top scorer (Golden Boot)</label><input class="txt" id="as" placeholder="set at end of tournament" value="${esc(res.actualScorer||"")}"><p class="hint">Set this to score everyone's top-scorer pick.</p>`;
+    host.appendChild(gb);
+    gb.querySelector("#as").oninput=e=>{LG.results.actualScorer=e.target.value;saveResultsSoon();};
+  }
+  if(ui.resStage==="groups")return renderResultGroups(host,res);
+  return renderResultKO(host,ui.resStage,res);
+}
+function renderResultGroups(host,res){
+  GL.forEach(g=>{
+    const h=document.createElement("div");h.className="group-head";h.innerHTML=`<span class="group-tag">Group ${g}</span><span class="gl"></span>`;host.appendChild(h);
+    fixturesFor(g).forEach((m,mi)=>{
+      const id=`${g}-${mi}`,sv=res.group[id]||{};
+      const w=document.createElement("div");w.className="match";
+      w.innerHTML=`<div class="mdtag">Matchday ${Math.floor(mi/2)+1}</div>
+        <div class="teams">
+          <div class="team"><span class="flag">${FLAGS[m[0]]||"⚽"}</span><span class="tname">${m[0]}</span></div>
+          <div class="vs"><input class="score res" inputmode="numeric" maxlength="2" data-id="${id}" data-s="h" value="${sv.h??""}"><span class="dash">–</span><input class="score res" inputmode="numeric" maxlength="2" data-id="${id}" data-s="a" value="${sv.a??""}"></div>
+          <div class="team"><span class="flag">${FLAGS[m[1]]||"⚽"}</span><span class="tname">${m[1]}</span></div>
+        </div><div class="verdict" id="rv-${id}"></div>`;
+      host.appendChild(w);rVerdict(id,m);
+    });
+  });
+  host.querySelectorAll(".score").forEach(inp=>inp.addEventListener("input",e=>{
+    const t=e.target,id=t.dataset.id;t.value=t.value.replace(/[^0-9]/g,"").slice(0,2);
+    const gp=LG.results.group;if(!gp[id])gp[id]={};gp[id][t.dataset.s]=t.value===""?null:+t.value;
+    rVerdict(id,findGroupMatch(id));saveResultsSoon();
+  }));
+}
+function rVerdict(id,m){const el=document.getElementById("rv-"+id);if(!el)return;const s=LG.results.group[id];if(!s||s.h==null||s.a==null){el.textContent="";el.className="verdict";return;}el.textContent=s.h>s.a?`${m[0]} win`:s.a>s.h?`${m[1]} win`:"Draw";el.className="verdict "+(s.h===s.a?"draw":"win");}
+
+function renderResultKO(host,round,res){
+  const resolved=resolveStage(round,res);
+  if(round==="r32"&&!allGroupsComplete(res)){
+    const n=document.createElement("div");n.className="banner wait";n.innerHTML=`⏳ Enter <b>all 72 group results</b> and the Round of 32 will appear here automatically with the correct teams.`;host.appendChild(n);
+  }
+  KO_LIST[round].forEach(mid=>{
+    const r=resolved[mid]||{};const sv=res.ko[mid]||{};const aT=r.aTeam,bT=r.bTeam;
+    const lbl=round==="f"?"🏆 The Final":`${KO_NAMES[round]} · Match ${mid}`;
+    const box=document.createElement("div");box.className="ko-match";
+    box.innerHTML=`<div class="lbl"><span>${lbl}</span></div>
+      <div class="ko-teams">
+        <div class="ko-side ${aT?'':'tbd'}"><span class="flag">${aT?(FLAGS[aT]||"⚽"):"❓"}</span><span class="tn">${aT||"TBD"}</span></div>
+        <div class="vs"><input class="score res" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="a" value="${sv.a??""}" ${aT?'':'disabled'}><span class="dash">–</span><input class="score res" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="b" value="${sv.b??""}" ${bT?'':'disabled'}></div>
+        <div class="ko-side ${bT?'':'tbd'}"><span class="flag">${bT?(FLAGS[bT]||"⚽"):"❓"}</span><span class="tn">${bT||"TBD"}</span></div>
+      </div>
+      <div class="penwrap" id="pen-${mid}" style="${needPens(sv)?'':'display:none'}"><span>Pens</span><input inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="pa" value="${sv.pa??""}"><span>–</span><input inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="pb" value="${sv.pb??""}"></div>
+      <div class="winner-pill" id="wpil-${mid}"></div>`;
+    host.appendChild(box);
+    if(aT||bT){if(!LG.results.ko[mid])LG.results.ko[mid]={};LG.results.ko[mid].aTeam=aT;LG.results.ko[mid].bTeam=bT;}
+    updWinPill(mid);
+  });
+  host.querySelectorAll("[data-mid]").forEach(inp=>inp.addEventListener("input",e=>{
+    const t=e.target,mid=t.dataset.mid,f=t.dataset.f;t.value=t.value.replace(/[^0-9]/g,"").slice(0,2);
+    if(!LG.results.ko[mid])LG.results.ko[mid]={};const o=LG.results.ko[mid];o[f]=t.value===""?null:+t.value;
+    const r=resolveStage(round,res)[mid];if(r){o.aTeam=r.aTeam;o.bTeam=r.bTeam;}
+    const pen=document.getElementById("pen-"+mid);if(pen)pen.style.display=needPens(o)?"flex":"none";
+    updWinPill(mid);saveResultsSoon();
+  }));
+}
+function needPens(sv){return sv&&sv.a!=null&&sv.b!=null&&+sv.a===+sv.b;}
+function updWinPill(mid){const el=document.getElementById("wpil-"+mid);if(!el)return;const w=winnerOf(mid,LG.results);el.textContent=w?`✅ ${w} advance`:"";}
+
+/* ============================================================
+   STANDINGS (group tables)
+   ============================================================ */
+function renderStandings(host){
+  const res=LG.results;
+  const c=document.createElement("div");c.className="card reveal";c.innerHTML=`<h2>Live Group Tables</h2><p class="lead">From actual results. Tie-breaks: points → goal difference → goals scored.</p>`;host.appendChild(c);
+  GL.forEach(g=>{
+    const arr=computeGroupTable(g,res);
+    const box=document.createElement("div");box.className="card reveal";box.style.padding="14px 12px";
+    const rows=arr.map((r,i)=>{const cls=i<2?(i===0?"q1":"q2"):(i===2?"q3":"");return `<tr class="${cls}"><td class="pos">${i+1}</td><td class="tl"><span class="miniflag">${FLAGS[r.team]||"⚽"}</span>${short(r.team)}</td><td>${r.pld}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf}</td><td>${r.ga}</td><td>${r.gd>0?"+":""}${r.gd}</td><td class="pts">${r.pts}</td></tr>`;}).join("");
+    box.innerHTML=`<div class="group-head" style="margin:0 0 6px;"><span class="group-tag">Group ${g}</span><span class="gl"></span></div><table class="ltable"><thead><tr><th>#</th><th class="tl">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th></tr></thead><tbody>${rows}</tbody></table>`;
+    host.appendChild(box);
+  });
+  if(GL.some(g=>computeGroupTable(g,res)[0].pld>0)){
+    const t=thirdPlaceRanking(res);
+    const box=document.createElement("div");box.className="card reveal";
+    const rows=t.map((r,i)=>`<tr class="${i<8?'q3':''}"><td class="pos">${i+1}</td><td class="tl"><span class="miniflag">${FLAGS[r.team]||"⚽"}</span>${short(r.team)} <span style="color:#7d8fae">(${r.group})</span></td><td>${r.pld}</td><td>${r.pts}</td><td>${r.gd>0?"+":""}${r.gd}</td><td>${r.gf}</td></tr>`).join("");
+    box.innerHTML=`<h2 style="font-size:18px;">3rd-Place Race</h2><p class="tiny" style="margin-bottom:6px;">Top 8 (gold) advance to the Round of 32.</p><table class="ltable"><thead><tr><th>#</th><th class="tl">Team</th><th>P</th><th>Pts</th><th>GD</th><th>GF</th></tr></thead><tbody>${rows}</tbody></table>`;
+    host.appendChild(box);
+  }
+  const key=document.createElement("div");key.className="qkey";key.innerHTML=`<b>Green</b> = top two qualify · <i>Gold</i> = third place (best 8 qualify)`;host.appendChild(key);
+}
+function short(t){return ({"Bosnia & Herzegovina":"Bosnia","Czech Republic":"Czechia","United States":"USA","South Africa":"S. Africa","South Korea":"S. Korea","Saudi Arabia":"Saudi"})[t]||t;}
+
+/* ============================================================
+   LEADERBOARD (live, all players in league)
+   ============================================================ */
+/* ============================================================
+   HOW IT WORKS (info tab)
+   ============================================================ */
+function renderInfo(host){
+  const scorer=esc(LG.scorerName||"the scorer");
+  const c=document.createElement("div");c.className="card reveal";
+  c.innerHTML=`<h2>How it works</h2>
+    <p class="lead">A quick guide to playing. Tap the tabs at the top to move around.</p>
+    <div class="rules">
+      <div class="rule"><div class="pts">6</div><div class="d"><b>Exact score</b> — you predicted the precise scoreline (e.g. 2–1 and it finishes 2–1).</div></div>
+      <div class="rule"><div class="pts">3</div><div class="d"><b>Right result</b> — correct winner, or you called a draw and it drew (but not the exact score).</div></div>
+      <div class="rule"><div class="pts">0</div><div class="d"><b>Wrong</b> — wrong outcome.</div></div>
+      <div class="rule"><div class="pts">10</div><div class="d"><b>Champion</b> — pick the tournament winner correctly.</div></div>
+      <div class="rule"><div class="pts">10</div><div class="d"><b>Golden Boot</b> — pick the tournament's top scorer correctly.</div></div>
+    </div>`;
+  host.appendChild(c);
+
+  const steps=document.createElement("div");steps.className="card reveal";
+  steps.innerHTML=`<h2 style="font-size:18px;">Playing, step by step</h2>
+    <div class="summary-line"><span><b>1. Golden Picks</b> — choose your champion and Golden Boot. These lock at <b>20:00 on Thu 11 June</b>, so get them in before kick-off.</span></div>
+    <div class="summary-line"><span><b>2. Group stage</b> — in the Predict tab, enter a score for all 72 group games. These also lock at 20:00 on 11 June.</span></div>
+    <div class="summary-line"><span><b>3. Knockouts</b> — each round (Round of 32, 16, quarters, semis, final) opens once ${scorer} has entered all the results from the round before. You'll see the real teams and predict the scores.</span></div>
+    <div class="summary-line"><span><b>4. Leaderboard</b> — the League tab shows live standings, updating as results come in.</span></div>`;
+  host.appendChild(steps);
+
+  const lk=document.createElement("div");lk.className="card reveal";
+  lk.innerHTML=`<h2 style="font-size:18px;">Locking & rounds</h2>
+    <p class="lead">🔒 Each round's predictions lock at a fixed time (or when results start, whichever is first) — so predict early. ⏳ A knockout round shows as "waiting" until the previous round's results are all in. ✅ means it's open to predict now.</p>
+    <div class="summary-line"><span>Group stage & Golden Picks</span><b>20:00, 11 Jun</b></div>
+    <div class="summary-line"><span>Round of 32</span><b>20:00, 28 Jun</b></div>
+    <div class="summary-line"><span>Round of 16</span><b>18:00, 4 Jul</b></div>
+    <div class="summary-line"><span>Quarter-finals</span><b>20:00, 9 Jul</b></div>
+    <div class="summary-line"><span>Semi-finals</span><b>20:00, 14 Jul</b></div>
+    <div class="summary-line"><span>3rd place & Final</span><b>22:00, 18 Jul</b></div>
+    <p class="hint" style="margin-top:8px;">All times UK (BST).</p>`;
+  host.appendChild(lk);
+
+  if(local.isScorer){
+    const sc=document.createElement("div");sc.className="card reveal";
+    sc.innerHTML=`<h2 style="font-size:18px;">You're the scorer</h2>
+      <p class="lead">In the <b>Results</b> tab you enter the actual scores as games finish. Group tables build automatically, the Round of 32 fills itself once all group games are in, and later rounds populate from the winners. Set the official Golden Boot winner there at the end. Use ⚙️ → <b>Manage players</b> to remove duplicates or rename people.</p>`;
+    host.appendChild(sc);
+  }
+
+  const hs=document.createElement("div");hs.className="card reveal";
+  hs.innerHTML=`<h2 style="font-size:18px;">Tips</h2>
+    <p class="lead">📲 On iPhone, open in Safari → Share → <b>Add to Home Screen</b> so it opens like an app.<br>🔁 Tap <b>Refresh</b> (bottom) if something looks out of date.<br>🏆 Your league code is <b>${esc(local.leagueId)}</b> — share it so others can join.</p>`;
+  host.appendChild(hs);
+}
+
+function renderLeaderboard(host){
+  const res=LG.results;
+  const players=Object.keys(LG.players).map(pid=>{
+    const pl=LG.players[pid];
+    const sc=scorePlayer({winner:pl.pred.winner,scorer:pl.pred.scorer,group:pl.pred.group||{},ko:pl.pred.ko||{}},res,res.actualScorer);
+    return {pid,name:pl.name,sc};
+  });
+  players.sort((a,b)=>b.sc.total-a.sc.total||b.sc.exact-a.sc.exact);
+  const c=document.createElement("div");c.className="card reveal";
+  c.innerHTML=`<h2>${esc(LG.name)} — Leaderboard</h2><p class="lead">Live standings, scored against the official results so far. Updates automatically as ${esc(LG.scorerName)} enters scores.</p>`;
+  players.forEach((p,i)=>{
+    const me=p.pid===local.playerId;
+    const row=document.createElement("div");row.className=`lbrow r${i+1} ${me?'me':''}`;
+    row.innerHTML=`<div class="rank">${i+1}</div><div class="nm">${esc(p.name)}${me?' <small>that’s you</small>':`<small>${p.sc.exact} exact · ${p.sc.result} results · ${p.sc.golden} golden</small>`}</div><div class="sc">${p.sc.total}</div>`;
+    c.appendChild(row);
+  });
+  if(players.length===1){const e=document.createElement("p");e.className="tiny";e.style.marginTop="10px";e.innerHTML=`Share code <b>${esc(local.leagueId)}</b> so others can join.`;c.appendChild(e);}
+  host.appendChild(c);
+
+  // my breakdown
+  const mine=players.find(p=>p.pid===local.playerId);
+  if(mine){
+    const champ=winnerOf("104",res);const pred=myPred();
+    const b=document.createElement("div");b.className="card reveal";
+    b.innerHTML=`<h2 style="font-size:18px;">Your card</h2>
+      <div class="scoreboard"><span class="big">${mine.sc.total}</span><span class="lab">points</span></div>
+      <div class="pbreak">
+        <div class="pcell"><div class="n">${mine.sc.exact}</div><div class="t">Exact (6pt)</div></div>
+        <div class="pcell"><div class="n">${mine.sc.result}</div><div class="t">Right result (3pt)</div></div>
+        <div class="pcell"><div class="n">${mine.sc.gPts}</div><div class="t">Group pts</div></div>
+        <div class="pcell"><div class="n">${mine.sc.koPts}</div><div class="t">Knockout pts</div></div>
+      </div>
+      <div class="summary-line" style="margin-top:10px;"><span>🏆 ${esc(pred.winner)||"(no pick)"}</span><b>${pred.winner?(champ?(pred.winner===champ?"✅ +10":"❌"):"⏳"):"—"}</b></div>
+      <div class="summary-line"><span>👟 ${esc(pred.scorer)||"(no pick)"}</span><b>${pred.scorer?(res.actualScorer?(norm(pred.scorer)===norm(res.actualScorer)?"✅ +10":"❌"):"⏳"):"—"}</b></div>`;
+    host.appendChild(b);
+  }
+}
+
+/* ============================================================
+   HELPERS / OVERLAY / SETTINGS
+   ============================================================ */
+function esc(s){return (s==null?"":(""+s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+let tt;function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2600);}
+function busy(msg){let o=document.getElementById("ov");if(!o){o=document.createElement("div");o.id="ov";o.className="overlay";o.innerHTML=`<div class="spin"></div><div class="msg" id="ovmsg"></div>`;document.body.appendChild(o);}document.getElementById("ovmsg").textContent=msg||"";}
+function unbusy(){const o=document.getElementById("ov");if(o)o.remove();}
+
+document.getElementById("syncBtn").onclick=()=>{toast("Refreshed");render();};
+document.getElementById("leaveBtn").onclick=()=>openSettings();
+
+function openSettings(){
+  const isScorer=local.isScorer;
+  busy("");const o=document.getElementById("ov");
+  const others=memberships.filter(m=>m.leagueId!==local.leagueId);
+  const switcher=others.length?`
+    <div style="margin:10px 0 2px;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.07em;text-transform:uppercase;font-size:12px;color:var(--gold);">Switch league</div>
+    ${others.map(m=>`<button class="btn btn-ghost sw" data-lg="${esc(m.leagueId)}" style="text-align:left;">🏆 ${esc(m.name)||esc(m.leagueId)}${m.isScorer?" · scorer":""}</button>`).join("")}`:"";
+  o.innerHTML=`<div class="card" style="max-width:440px;width:92%;max-height:86vh;overflow:auto;">
+    <h2>League settings</h2>
+    <p class="lead">${esc(LG.name)} · code <b>${esc(local.leagueId)}</b></p>
+    <button class="btn btn-ghost" id="copyCode">📋 Copy league code</button>
+    ${isScorer?`<button class="btn btn-gold" id="managePlayers">👥 Manage players</button>`:`<button class="btn btn-gold" id="claimScorer">🔑 I'm the scorer (enter passcode)</button>`}
+    ${switcher}
+    <div style="margin:10px 0 2px;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.07em;text-transform:uppercase;font-size:12px;color:var(--gold);">Other</div>
+    <button class="btn btn-ghost" id="addAnother">➕ Join or create another league</button>
+    <button class="btn btn-ghost" id="switchL">↩︎ Leave this league (on this device)</button>
+    <button class="btn btn-ghost" id="closeSet">Close</button>
+  </div>`;
+  o.querySelector("#copyCode").onclick=()=>{navigator.clipboard?.writeText(local.leagueId);toast("Code copied: "+local.leagueId);};
+  o.querySelector("#closeSet").onclick=()=>unbusy();
+  o.querySelectorAll(".sw").forEach(b=>b.onclick=()=>{busy("Switching…");switchToLeague(b.dataset.lg);unbusy();});
+  o.querySelector("#addAnother").onclick=()=>{
+    // go to lobby but KEEP memberships; clear only the active pointer
+    if(unsub)unsub();LG=null;local={leagueId:"",playerId:"",isScorer:false};
+    try{localStorage.setItem(LS,JSON.stringify({active:local,memberships}));}catch(e){}
+    unbusy();render();
+  };
+  o.querySelector("#switchL").onclick=()=>{
+    if(confirm("Leave this league on this device? Your predictions stay saved in the league; you can rejoin with the code. (This does not delete you from the league.)")){
+      forgetMembership(local.leagueId);
+      if(unsub)unsub();LG=null;
+      const next=memberships[0];
+      local=next?{leagueId:next.leagueId,playerId:next.playerId,isScorer:next.isScorer}:{leagueId:"",playerId:"",isScorer:false};
+      saveLocal();unbusy();
+      if(local.leagueId){listenLeague();}render();
+    }
+  };
+  const cs=o.querySelector("#claimScorer");
+  if(cs)cs.onclick=()=>{
+    const pw=prompt("Enter the scorer passcode for "+LG.name+":");
+    if(pw==null)return;
+    if(pw===LG.scorerPass){local.isScorer=true;saveLocal();toast("Scorer mode unlocked");unbusy();ui.mode="results";render();}
+    else toast("Wrong passcode");
+  };
+  const mp=o.querySelector("#managePlayers");
+  if(mp)mp.onclick=()=>openManagePlayers();
+}
+
+/* ============================================================
+   MANAGE PLAYERS  (scorer only)
+   ============================================================ */
+function openManagePlayers(){
+  busy("");const o=document.getElementById("ov");
+  const pids=Object.keys(LG.players||{});
+  // sort: empty-prediction (likely duplicates) first so they're easy to clear
+  function predCount(p){const pr=p.pred||{};let n=0;if(pr.winner)n++;if(pr.scorer)n++;n+=Object.keys(pr.group||{}).length;n+=Object.keys(pr.ko||{}).length;return n;}
+  pids.sort((a,b)=>predCount(LG.players[a])-predCount(LG.players[b]));
+  const rows=pids.map(pid=>{
+    const pl=LG.players[pid];const pc=predCount(pl);const isMe=pid===local.playerId;
+    const tag=pc===0?`<span style="color:var(--red);">empty — likely a duplicate</span>`:`${pc} prediction${pc===1?"":"s"} saved`;
+    return `<div class="lbrow" style="align-items:flex-start;">
+      <div class="nm" style="flex:1;">${esc(pl.name)}${isMe?' <small style="color:var(--gold)">that\u2019s you</small>':''}<small>${tag}</small></div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <button class="btn btn-ghost mp-ren" data-pid="${pid}" style="padding:7px 10px;font-size:12px;margin:0;">Rename</button>
+        <button class="btn btn-ghost mp-del" data-pid="${pid}" data-nm="${esc(pl.name)}" data-empty="${pc===0?1:0}" style="padding:7px 10px;font-size:12px;margin:0;color:#f7b7bd;border-color:rgba(226,55,68,.4);">Delete</button>
+      </div>
+    </div>`;
+  }).join("");
+  o.innerHTML=`<div class="card" style="max-width:460px;width:92%;max-height:86vh;overflow:auto;">
+    <h2>Manage players</h2>
+    <p class="lead">Remove duplicate or unwanted entries, or rename someone. Entries marked <b style="color:var(--red)">empty</b> have made no predictions — usually safe to delete. Deleting is permanent.</p>
+    ${rows||'<p class="tiny">No players yet.</p>'}
+    <button class="btn btn-ghost" id="backSet" style="margin-top:12px;">‹ Back</button>
+  </div>`;
+  o.querySelector("#backSet").onclick=()=>openSettings();
+  o.querySelectorAll(".mp-del").forEach(b=>b.onclick=async()=>{
+    const pid=b.dataset.pid,nm=b.dataset.nm,empty=b.dataset.empty==="1";
+    if(pid===local.playerId){if(!confirm("This is YOUR own entry. Delete it anyway? You'd need to rejoin to play."))return;}
+    else if(!empty){if(!confirm(`Delete "${nm}"? They have predictions saved. This can't be undone.`))return;}
+    else{if(!confirm(`Delete "${nm}" (empty entry)?`))return;}
+    busy("Deleting…");
+    try{await deletePlayer(pid);toast("Deleted "+nm);}catch(e){toast("Delete failed");}
+    // onSnapshot will refresh LG; reopen the manager shortly after
+    setTimeout(()=>{unbusy();if(local.leagueId)openManagePlayers();},600);
+  });
+  o.querySelectorAll(".mp-ren").forEach(b=>b.onclick=async()=>{
+    const pid=b.dataset.pid;const cur=LG.players[pid]?.name||"";
+    const nn=prompt("New name for this player:",cur);
+    if(nn==null)return;const t=nn.trim();if(!t){toast("Name can't be empty");return;}
+    busy("Renaming…");
+    try{await renamePlayer(pid,t);toast("Renamed to "+t);if(pid===local.playerId){const m=memberships.find(x=>x.leagueId===local.leagueId);if(m){m.name=t;saveLocal();}}}catch(e){toast("Rename failed");}
+    setTimeout(()=>{unbusy();if(local.leagueId)openManagePlayers();},600);
+  });
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(function boot(){
+  if(local.leagueId){listenLeague();render();}
+  else render();
+})();
+
+</script>
+</body>
+</html>
