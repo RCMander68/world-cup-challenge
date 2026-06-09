@@ -436,7 +436,7 @@ async function createLeague(leagueName,scorerName,scorerPass){
   };
   await leagueRef(id).set(doc);
   local={leagueId:id,playerId:pid,isScorer:true};
-  rememberMembership(id,pid,true,scorerName||"Scorer");
+  rememberMembership(id,pid,true,leagueName);
   saveLocal();
   return id;
 }
@@ -452,10 +452,11 @@ async function joinLeague(id,displayName){
   }
   const snap=await leagueRef(id).get();
   if(!snap.exists)throw new Error("No league found with that code.");
+  const leagueName=(snap.data()&&snap.data().name)||id;
   const pid=randomId(8);
   await leagueRef(id).update({["players."+pid]:{name:displayName,pred:blankPred(),joinedAt:Date.now()}});
   local={leagueId:id,playerId:pid,isScorer:false};
-  rememberMembership(id,pid,false,displayName);
+  rememberMembership(id,pid,false,leagueName);
   saveLocal();
   return id;
 }
@@ -477,6 +478,9 @@ function listenLeague(){
     LG=snap.data();
     if(!LG.results)LG.results=blankResults();
     if(!LG.players)LG.players={};
+    // keep the stored membership label in sync with the real league name
+    const mem=memberships.find(x=>x.leagueId===local.leagueId);
+    if(mem&&LG.name&&mem.name!==LG.name){mem.name=LG.name;saveLocal();}
     render();
   },err=>{toast("Connection issue — tap Refresh");});
 }
@@ -963,34 +967,66 @@ function unbusy(){const o=document.getElementById("ov");if(o)o.remove();}
 document.getElementById("syncBtn").onclick=()=>{toast("Refreshed");render();};
 document.getElementById("leaveBtn").onclick=()=>openSettings();
 
-function openLeaguePicker(){
+async function openLeaguePicker(){
   busy("");const o=document.getElementById("ov");
-  const rows=memberships.map(m=>{
-    const active=m.leagueId===local.leagueId;
-    return `<div class="lbrow ${active?'me':''}" data-lg="${esc(m.leagueId)}" style="cursor:pointer;">
-      <div class="rank">🏆</div>
-      <div class="nm">${esc(m.name)||esc(m.leagueId)}<small>code ${esc(m.leagueId)}${m.isScorer?" · you're the scorer":""}${active?" · current":""}</small></div>
-      <div class="sc" style="font-size:15px;color:${active?'var(--gold)':'#8aa0c2'};">${active?'✓':'›'}</div>
+  // Seed names we already know: the current league from LG, plus any cached names.
+  const nameFor={};
+  memberships.forEach(m=>{nameFor[m.leagueId]=m.name||"";});
+  if(LG&&local.leagueId)nameFor[local.leagueId]=LG.name||nameFor[local.leagueId]||"";
+  function rowsHtml(loading){
+    return memberships.map(m=>{
+      const active=m.leagueId===local.leagueId;
+      const nm=nameFor[m.leagueId];
+      const title=nm||(loading?`<span style="opacity:.6;">loading…</span>`:esc(m.leagueId));
+      return `<div class="lbrow ${active?'me':''}" data-lg="${esc(m.leagueId)}" style="cursor:pointer;">
+        <div class="rank">🏆</div>
+        <div class="nm">${nm?esc(nm):title}<small>code ${esc(m.leagueId)}${m.isScorer?" · you're the scorer":""}${active?" · current":""}</small></div>
+        <div class="sc" style="font-size:15px;color:${active?'var(--gold)':'#8aa0c2'};">${active?'✓':'›'}</div>
+      </div>`;
+    }).join("");
+  }
+  function paint(loading){
+    o.innerHTML=`<div class="card" style="max-width:440px;width:92%;max-height:86vh;overflow:auto;">
+      <h2>Your leagues</h2>
+      <p class="lead">Tap a league to switch to it. The one you're in now is marked ✓.</p>
+      <div id="lpRows">${rowsHtml(loading)}</div>
+      <button class="btn btn-gold" id="lpAdd" style="margin-top:12px;">➕ Join or create another league</button>
+      <button class="btn btn-ghost" id="lpClose">Close</button>
     </div>`;
-  }).join("");
-  o.innerHTML=`<div class="card" style="max-width:440px;width:92%;max-height:86vh;overflow:auto;">
-    <h2>Your leagues</h2>
-    <p class="lead">Tap a league to switch to it. The one you're in now is marked ✓.</p>
-    ${rows}
-    <button class="btn btn-gold" id="lpAdd" style="margin-top:12px;">➕ Join or create another league</button>
-    <button class="btn btn-ghost" id="lpClose">Close</button>
-  </div>`;
-  o.querySelector("#lpClose").onclick=()=>unbusy();
-  o.querySelector("#lpAdd").onclick=()=>{
-    if(unsub)unsub();LG=null;local={leagueId:"",playerId:"",isScorer:false};
-    try{localStorage.setItem(LS,JSON.stringify({active:local,memberships}));}catch(e){}
-    unbusy();render();
-  };
-  o.querySelectorAll("[data-lg]").forEach(row=>row.onclick=()=>{
-    const id=row.dataset.lg;
-    if(id===local.leagueId){unbusy();return;}
-    busy("Switching…");switchToLeague(id);unbusy();
-  });
+    o.querySelector("#lpClose").onclick=()=>unbusy();
+    o.querySelector("#lpAdd").onclick=()=>{
+      if(unsub)unsub();LG=null;local={leagueId:"",playerId:"",isScorer:false};
+      try{localStorage.setItem(LS,JSON.stringify({active:local,memberships}));}catch(e){}
+      unbusy();render();
+    };
+    o.querySelectorAll("[data-lg]").forEach(row=>row.onclick=()=>{
+      const id=row.dataset.lg;
+      if(id===local.leagueId){unbusy();return;}
+      busy("Switching…");switchToLeague(id);unbusy();
+    });
+  }
+  // Always re-fetch names for leagues other than the current one, so any
+  // stale or wrong cached labels (e.g. an old player name) are corrected.
+  const toFetch=memberships.map(m=>m.leagueId).filter(id=>id!==local.leagueId);
+  paint(toFetch.some(id=>!nameFor[id]));
+  if(toFetch.length){
+    try{
+      const snaps=await Promise.all(toFetch.map(id=>leagueRef(id).get().catch(()=>null)));
+      snaps.forEach((snap,i)=>{
+        const id=toFetch[i];
+        if(snap&&snap.exists){
+          const realName=snap.data().name||"";
+          if(realName){
+            nameFor[id]=realName;
+            const mem=memberships.find(x=>x.leagueId===id);
+            if(mem)mem.name=realName;
+          }
+        }
+      });
+      saveLocal();
+      if(document.getElementById("lpRows"))paint(false);
+    }catch(e){ if(document.getElementById("lpRows"))paint(false); }
+  }
 }
 
 function openSettings(){
@@ -1086,7 +1122,7 @@ function openManagePlayers(){
     const nn=prompt("New name for this player:",cur);
     if(nn==null)return;const t=nn.trim();if(!t){toast("Name can't be empty");return;}
     busy("Renaming…");
-    try{await renamePlayer(pid,t);toast("Renamed to "+t);if(pid===local.playerId){const m=memberships.find(x=>x.leagueId===local.leagueId);if(m){m.name=t;saveLocal();}}}catch(e){toast("Rename failed");}
+    try{await renamePlayer(pid,t);toast("Renamed to "+t);}catch(e){toast("Rename failed");}
     setTimeout(()=>{unbusy();if(local.leagueId)openManagePlayers();},600);
   });
 }
