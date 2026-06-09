@@ -947,7 +947,15 @@ function renderLeaderboard(host){
    ============================================================ */
 function esc(s){return (s==null?"":(""+s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 let tt;function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2600);}
-function busy(msg){let o=document.getElementById("ov");if(!o){o=document.createElement("div");o.id="ov";o.className="overlay";o.innerHTML=`<div class="spin"></div><div class="msg" id="ovmsg"></div>`;document.body.appendChild(o);}document.getElementById("ovmsg").textContent=msg||"";}
+function busy(msg){
+  let o=document.getElementById("ov");
+  if(!o){o=document.createElement("div");o.id="ov";o.className="overlay";document.body.appendChild(o);}
+  // Always (re)build the spinner content so #ovmsg is guaranteed to exist,
+  // even if the overlay was previously filled with settings/other HTML.
+  o.innerHTML=`<div class="spin"></div><div class="msg" id="ovmsg"></div>`;
+  const m=document.getElementById("ovmsg");
+  if(m)m.textContent=msg||"";
+}
 function unbusy(){const o=document.getElementById("ov");if(o)o.remove();}
 
 document.getElementById("syncBtn").onclick=()=>{toast("Refreshed");render();};
@@ -971,7 +979,13 @@ function openSettings(){
     <button class="btn btn-ghost" id="switchL">↩︎ Leave this league (on this device)</button>
     <button class="btn btn-ghost" id="closeSet">Close</button>
   </div>`;
-  o.querySelector("#copyCode").onclick=()=>{navigator.clipboard?.writeText(local.leagueId);toast("Code copied: "+local.leagueId);};
+  o.querySelector("#copyCode").onclick=()=>{
+    const code=local.leagueId;
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(code).then(()=>toast("Code copied: "+code)).catch(()=>toast("Your code is: "+code));}
+      else{toast("Your code is: "+code);}
+    }catch(e){toast("Your code is: "+code);}
+  };
   o.querySelector("#closeSet").onclick=()=>unbusy();
   o.querySelectorAll(".sw").forEach(b=>b.onclick=()=>{busy("Switching…");switchToLeague(b.dataset.lg);unbusy();});
   o.querySelector("#addAnother").onclick=()=>{
@@ -1008,16 +1022,17 @@ function openManagePlayers(){
   busy("");const o=document.getElementById("ov");
   const pids=Object.keys(LG.players||{});
   // sort: empty-prediction (likely duplicates) first so they're easy to clear
-  function predCount(p){const pr=p.pred||{};let n=0;if(pr.winner)n++;if(pr.scorer)n++;n+=Object.keys(pr.group||{}).length;n+=Object.keys(pr.ko||{}).length;return n;}
+  function predCount(p){const pr=(p&&p.pred)||{};let n=0;if(pr.winner)n++;if(pr.scorer)n++;n+=Object.keys(pr.group||{}).length;n+=Object.keys(pr.ko||{}).length;return n;}
   pids.sort((a,b)=>predCount(LG.players[a])-predCount(LG.players[b]));
   const rows=pids.map(pid=>{
-    const pl=LG.players[pid];const pc=predCount(pl);const isMe=pid===local.playerId;
+    const pl=LG.players[pid]||{};const pc=predCount(pl);const isMe=pid===local.playerId;
+    const nm=pl.name||"(no name)";
     const tag=pc===0?`<span style="color:var(--red);">empty — likely a duplicate</span>`:`${pc} prediction${pc===1?"":"s"} saved`;
     return `<div class="lbrow" style="align-items:flex-start;">
-      <div class="nm" style="flex:1;">${esc(pl.name)}${isMe?' <small style="color:var(--gold)">that\u2019s you</small>':''}<small>${tag}</small></div>
+      <div class="nm" style="flex:1;">${esc(nm)}${isMe?' <small style="color:var(--gold)">that\u2019s you</small>':''}<small>${tag}</small></div>
       <div style="display:flex;flex-direction:column;gap:6px;">
         <button class="btn btn-ghost mp-ren" data-pid="${pid}" style="padding:7px 10px;font-size:12px;margin:0;">Rename</button>
-        <button class="btn btn-ghost mp-del" data-pid="${pid}" data-nm="${esc(pl.name)}" data-empty="${pc===0?1:0}" style="padding:7px 10px;font-size:12px;margin:0;color:#f7b7bd;border-color:rgba(226,55,68,.4);">Delete</button>
+        <button class="btn btn-ghost mp-del" data-pid="${pid}" data-nm="${esc(nm)}" data-empty="${pc===0?1:0}" style="padding:7px 10px;font-size:12px;margin:0;color:#f7b7bd;border-color:rgba(226,55,68,.4);">Delete</button>
       </div>
     </div>`;
   }).join("");
