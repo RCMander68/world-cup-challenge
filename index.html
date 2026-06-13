@@ -1393,6 +1393,7 @@ function openMatchReveal(kind,id){
 }
 
 
+function esc(s){return (s==null?"":(""+s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 let tt;function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2600);}
 function busy(msg){
   let o=document.getElementById("ov");
