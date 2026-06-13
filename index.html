@@ -78,6 +78,8 @@
   .actbar .ptpill{font-family:'Anton';font-size:13px;color:var(--ink);background:var(--gold);border-radius:7px;padding:2px 9px;}
   .actbar .ptpill.zero{background:rgba(255,255,255,.16);color:#9fb0cc;}
   .actbar .ptpill.six{background:var(--green);color:#04261a;}
+  .revealtap{margin-top:8px;text-align:center;font-family:'Archivo Narrow';font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--gold);cursor:pointer;padding:6px;border-top:1px dashed var(--line);}
+  .revealtap:active{opacity:.6;}
   .ptbadge{display:inline-block;margin-left:8px;font-family:'Anton';font-size:12px;color:var(--ink);background:var(--gold);border-radius:6px;padding:1px 7px;vertical-align:middle;}
   .ptbadge.zero{background:rgba(255,255,255,.15);color:#9fb0cc;}
   .lockicon{text-align:center;font-size:10px;color:#8aa0c2;margin-top:4px;font-family:'Archivo Narrow';font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
@@ -201,6 +203,8 @@ try{
 const FLAGS={"Mexico":"🇲🇽","South Africa":"🇿🇦","South Korea":"🇰🇷","Czech Republic":"🇨🇿","Canada":"🇨🇦","Bosnia & Herzegovina":"🇧🇦","Qatar":"🇶🇦","Switzerland":"🇨🇭","Brazil":"🇧🇷","Morocco":"🇲🇦","Haiti":"🇭🇹","Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","United States":"🇺🇸","Paraguay":"🇵🇾","Australia":"🇦🇺","Turkey":"🇹🇷","Germany":"🇩🇪","Curaçao":"🇨🇼","Ivory Coast":"🇨🇮","Ecuador":"🇪🇨","Netherlands":"🇳🇱","Japan":"🇯🇵","Sweden":"🇸🇪","Tunisia":"🇹🇳","Belgium":"🇧🇪","Egypt":"🇪🇬","Iran":"🇮🇷","New Zealand":"🇳🇿","Spain":"🇪🇸","Cape Verde":"🇨🇻","Saudi Arabia":"🇸🇦","Uruguay":"🇺🇾","France":"🇫🇷","Senegal":"🇸🇳","Iraq":"🇮🇶","Norway":"🇳🇴","Argentina":"🇦🇷","Algeria":"🇩🇿","Austria":"🇦🇹","Jordan":"🇯🇴","Portugal":"🇵🇹","DR Congo":"🇨🇩","Uzbekistan":"🇺🇿","Colombia":"🇨🇴","England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Croatia":"🇭🇷","Ghana":"🇬🇭","Panama":"🇵🇦"};
 const GROUPS={A:["Mexico","South Africa","South Korea","Czech Republic"],B:["Canada","Bosnia & Herzegovina","Qatar","Switzerland"],C:["Brazil","Morocco","Haiti","Scotland"],D:["United States","Paraguay","Australia","Turkey"],E:["Germany","Curaçao","Ivory Coast","Ecuador"],F:["Netherlands","Japan","Sweden","Tunisia"],G:["Belgium","Egypt","Iran","New Zealand"],H:["Spain","Cape Verde","Saudi Arabia","Uruguay"],I:["France","Senegal","Iraq","Norway"],J:["Argentina","Algeria","Austria","Jordan"],K:["Portugal","DR Congo","Uzbekistan","Colombia"],L:["England","Croatia","Ghana","Panama"]};
 const GL=Object.keys(GROUPS);
+const SCHEDULE={"A-0":["2026-06-11","20:00"],"A-1":["2026-06-12","03:00"],"A-2":["2026-06-19","02:00"],"A-3":["2026-06-18","17:00"],"A-4":["2026-06-25","02:00"],"A-5":["2026-06-25","02:00"],"B-0":["2026-06-12","20:00"],"B-1":["2026-06-13","20:00"],"B-2":["2026-06-18","23:00"],"B-3":["2026-06-18","20:00"],"B-4":["2026-06-24","20:00"],"B-5":["2026-06-24","20:00"],"C-0":["2026-06-13","23:00"],"C-1":["2026-06-14","02:00"],"C-2":["2026-06-20","01:30"],"C-3":["2026-06-19","23:00"],"C-4":["2026-06-24","23:00"],"C-5":["2026-06-24","23:00"],"D-0":["2026-06-13","02:00"],"D-1":["2026-06-14","05:00"],"D-2":["2026-06-19","20:00"],"D-3":["2026-06-20","04:00"],"D-4":["2026-06-26","03:00"],"D-5":["2026-06-26","03:00"],"E-0":["2026-06-14","18:00"],"E-1":["2026-06-15","00:00"],"E-2":["2026-06-20","21:00"],"E-3":["2026-06-21","01:00"],"E-4":["2026-06-25","21:00"],"E-5":["2026-06-25","21:00"],"F-0":["2026-06-14","21:00"],"F-1":["2026-06-15","03:00"],"F-2":["2026-06-20","18:00"],"F-3":["2026-06-21","05:00"],"F-4":["2026-06-26","00:00"],"F-5":["2026-06-26","00:00"],"G-0":["2026-06-15","20:00"],"G-1":["2026-06-16","02:00"],"G-2":["2026-06-21","20:00"],"G-3":["2026-06-22","02:00"],"G-4":["2026-06-27","04:00"],"G-5":["2026-06-27","04:00"],"H-0":["2026-06-15","17:00"],"H-1":["2026-06-15","23:00"],"H-2":["2026-06-21","17:00"],"H-3":["2026-06-21","23:00"],"H-4":["2026-06-27","01:00"],"H-5":["2026-06-27","01:00"],"I-0":["2026-06-16","20:00"],"I-1":["2026-06-16","23:00"],"I-2":["2026-06-22","22:00"],"I-3":["2026-06-23","01:00"],"I-4":["2026-06-26","20:00"],"I-5":["2026-06-26","20:00"],"J-0":["2026-06-17","02:00"],"J-1":["2026-06-17","05:00"],"J-2":["2026-06-22","18:00"],"J-3":["2026-06-23","04:00"],"J-4":["2026-06-28","03:00"],"J-5":["2026-06-28","03:00"],"K-0":["2026-06-17","18:00"],"K-1":["2026-06-18","03:00"],"K-2":["2026-06-23","18:00"],"K-3":["2026-06-24","03:00"],"K-4":["2026-06-28","00:30"],"K-5":["2026-06-28","00:30"],"L-0":["2026-06-17","21:00"],"L-1":["2026-06-18","00:00"],"L-2":["2026-06-23","21:00"],"L-3":["2026-06-24","00:00"],"L-4":["2026-06-27","22:00"],"L-5":["2026-06-27","22:00"]};
+const KO_SCHED={"73":["2026-06-28","20:00"],"74":["2026-06-29","21:30"],"75":["2026-06-30","02:00"],"76":["2026-06-29","18:00"],"77":["2026-06-30","22:00"],"78":["2026-06-30","18:00"],"79":["2026-07-01","02:00"],"80":["2026-07-01","17:00"],"81":["2026-07-02","01:00"],"82":["2026-07-01","21:00"],"83":["2026-07-03","00:00"],"84":["2026-07-02","20:00"],"85":["2026-07-03","04:00"],"86":["2026-07-03","23:00"],"87":["2026-07-04","02:30"],"88":["2026-07-03","19:00"],"89":["2026-07-04","22:00"],"90":["2026-07-04","18:00"],"91":["2026-07-05","21:00"],"92":["2026-07-06","01:00"],"93":["2026-07-06","20:00"],"94":["2026-07-07","01:00"],"95":["2026-07-07","17:00"],"96":["2026-07-07","21:00"],"97":["2026-07-09","21:00"],"98":["2026-07-10","20:00"],"99":["2026-07-11","22:00"],"100":["2026-07-12","02:00"],"101":["2026-07-14","20:00"],"102":["2026-07-15","20:00"],"103":["2026-07-18","22:00"],"104":["2026-07-19","20:00"]};
 const ALL_TEAMS=Object.values(GROUPS).flat().sort();
 function fixturesFor(g){const t=GROUPS[g];return [[t[0],t[1]],[t[2],t[3]],[t[0],t[2]],[t[3],t[1]],[t[3],t[0]],[t[1],t[2]]];}
 // Best-effort likely attacking/notable players per nation for the Golden Boot picker.
@@ -415,7 +419,7 @@ let unsub=null;       // firestore listener
 let saveTimer=null;
 
 function blankPred(){return {winner:"",scorer:"",scorerCountry:"",group:{},ko:{}};}
-function blankResults(){return {group:{},ko:{},actualScorer:"",facts:{},scorers:[]};}
+function blankResults(){return {group:{},ko:{},actualScorer:"",facts:{},scorers:[],cards:[]};}
 
 /* ============================================================
    FIRESTORE LAYER
@@ -485,6 +489,7 @@ function listenLeague(){
     if(!LG.results)LG.results=blankResults();
     if(!LG.results.facts)LG.results.facts={};
     if(!LG.results.scorers)LG.results.scorers=[];
+    if(!LG.results.cards)LG.results.cards=[];
     if(!LG.players)LG.players={};
     // keep the stored membership label in sync with the real league name
     const mem=memberships.find(x=>x.leagueId===local.leagueId);
@@ -552,7 +557,7 @@ function render(){
   const chipEl=document.getElementById("leagueChip");
   if(chipEl)chipEl.onclick=()=>openLeaguePicker();
   // mode tabs
-  const tabs=[["predict","🔮 Predict"],["standings","🏆 Tables"],["leaderboard","📊 League"],["facts","📋 Facts"],["info","ℹ️ Help"]];
+  const tabs=[["predict","🔮 Predict"],["today","📅 Today"],["standings","🏆 Tables"],["leaderboard","📊 League"],["facts","📋 Facts"],["info","ℹ️ Help"]];
   if(local.isScorer)tabs.splice(1,0,["results","✍️ Results"]);
   let html=`<div class="modetabs">`+tabs.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div><div id="modeBody"></div>`;
   app.innerHTML=html;
@@ -562,6 +567,7 @@ function render(){
   else if(ui.mode==="results")renderResults(body);
   else if(ui.mode==="standings")renderStandings(body);
   else if(ui.mode==="leaderboard")renderLeaderboard(body);
+  else if(ui.mode==="today")renderToday(body);
   else if(ui.mode==="facts")renderFacts(body);
   else if(ui.mode==="info")renderInfo(body);
 }
@@ -718,12 +724,13 @@ function renderPredictGroups(host,res,st){
     fixturesFor(g).forEach((m,mi)=>{
       const id=`${g}-${mi}`,sv=myPred().group[id]||{};
       const w=document.createElement("div");w.className="match";
+      const revealBtn=locked?`<div class="revealtap" data-rk="group" data-rid="${id}">👁 See everyone's picks</div>`:"";
       w.innerHTML=`<div class="mdtag">Matchday ${Math.floor(mi/2)+1}</div>
         <div class="teams">
           <div class="team"><span class="flag">${FLAGS[m[0]]||"⚽"}</span><span class="tname">${m[0]}</span></div>
           <div class="vs"><input class="score" inputmode="numeric" maxlength="2" data-id="${id}" data-s="h" value="${sv.h??""}" ${locked?'disabled':''}><span class="dash">–</span><input class="score" inputmode="numeric" maxlength="2" data-id="${id}" data-s="a" value="${sv.a??""}" ${locked?'disabled':''}></div>
           <div class="team"><span class="flag">${FLAGS[m[1]]||"⚽"}</span><span class="tname">${m[1]}</span></div>
-        </div><div class="verdict" id="pv-${id}"></div>${groupActualStrip(id,m)}`;
+        </div><div class="verdict" id="pv-${id}"></div>${groupActualStrip(id,m)}${revealBtn}`;
       host.appendChild(w);pVerdict(id,m);
     });
   });
@@ -733,6 +740,7 @@ function renderPredictGroups(host,res,st){
     gp[id][t.dataset.s]=t.value===""?null:+t.value;
     const m=findGroupMatch(id);pVerdict(id,m);savePredSoon();
   }));
+  host.querySelectorAll(".revealtap").forEach(el=>el.onclick=()=>openMatchReveal(el.dataset.rk,el.dataset.rid));
 }
 function findGroupMatch(id){const[g,mi]=id.split("-");return fixturesFor(g)[+mi];}
 function pVerdict(id,m){const el=document.getElementById("pv-"+id);if(!el)return;const s=myPred().group[id];if(!s||s.h==null||s.a==null){el.textContent="";el.className="verdict";return;}el.textContent=s.h>s.a?`${m[0]} win`:s.a>s.h?`${m[1]} win`:"Draw";el.className="verdict "+(s.h===s.a?"draw":"win");}
@@ -770,12 +778,13 @@ function renderPredictKO(host,round,res,st){
     const aT=gA||p.aTeam, bT=gB||p.bTeam;
     const lbl=round==="f"?"🏆 The Final":`${KO_NAMES[round]} · Match ${mid}`;
     const b=document.createElement("div");b.className="ko-match";
+    const revealBtn=locked?`<div class="revealtap" data-rk="${round}" data-rid="${mid}">👁 See everyone's picks</div>`:"";
     b.innerHTML=`<div class="lbl"><span>${lbl}</span></div>
       <div class="ko-teams">
         <div class="ko-side ${aT?'':'tbd'}"><span class="flag">${aT?(FLAGS[aT]||"⚽"):"❓"}</span><span class="tn">${aT||"TBD"}</span></div>
         <div class="vs"><input class="score" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="a" value="${p.a??""}" ${locked||!aT?'disabled':''}><span class="dash">–</span><input class="score" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="b" value="${p.b??""}" ${locked||!bT?'disabled':''}></div>
         <div class="ko-side ${bT?'':'tbd'}"><span class="flag">${bT?(FLAGS[bT]||"⚽"):"❓"}</span><span class="tn">${bT||"TBD"}</span></div>
-      </div>${koActualStrip(mid)}`;
+      </div>${koActualStrip(mid)}${revealBtn}`;
     host.appendChild(b);
     // persist the resolved team names onto my prediction so scoring can align
     if(aT||bT){const kp=LG.players[local.playerId].pred.ko;if(!kp[mid])kp[mid]={a:null,b:null};kp[mid].aTeam=aT;kp[mid].bTeam=bT;}
@@ -785,6 +794,7 @@ function renderPredictKO(host,round,res,st){
     const kp=LG.players[local.playerId].pred.ko;if(!kp[mid])kp[mid]={a:null,b:null};
     kp[mid][t.dataset.f]=t.value===""?null:+t.value;savePredSoon();
   }));
+  host.querySelectorAll(".revealtap").forEach(el=>el.onclick=()=>openMatchReveal(el.dataset.rk,el.dataset.rid));
 }
 
 /* ============================================================
@@ -958,6 +968,98 @@ function short(t){return ({"Bosnia & Herzegovina":"Bosnia","Czech Republic":"Cze
 /* ============================================================
    FACTS TAB (info only — never affects scoring)
    ============================================================ */
+/* ============================================================
+   TODAY / FIXTURES BY DAY  (uses baked-in real schedule, UK time)
+   ============================================================ */
+function ukToday(){
+  // Get current date in UK time as YYYY-MM-DD
+  const f=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/London",year:"numeric",month:"2-digit",day:"2-digit"});
+  return f.format(new Date());
+}
+function prettyDate(iso){
+  const [y,m,d]=iso.split("-").map(Number);
+  const dt=new Date(Date.UTC(y,m-1,d));
+  return dt.toLocaleDateString("en-GB",{timeZone:"UTC",weekday:"long",day:"numeric",month:"long"});
+}
+function allFixturesByDate(){
+  // returns {date: [ {id,kind,home,away,time,resultStr} ]}
+  const map={};
+  function push(date,obj){(map[date]=map[date]||[]).push(obj);}
+  GL.forEach(g=>fixturesFor(g).forEach((m,mi)=>{
+    const id=`${g}-${mi}`;const s=SCHEDULE[id];if(!s)return;
+    const a=LG.results.group[id];
+    push(s[0],{id,kind:"group",home:m[0],away:m[1],time:s[1],
+      resultStr:(a&&a.h!=null&&a.a!=null)?`${a.h}–${a.a}`:null});
+  }));
+  // knockouts: only show once teams resolved; use KO_SCHED dates
+  Object.keys(KO_NAMES).forEach(rk=>{
+    KO_LIST[rk].forEach(mid=>{
+      const s=KO_SCHED[mid];if(!s)return;
+      const a=LG.results.ko[mid];
+      const guide=(typeof resolveStage==="function")?resolveStage(rk,LG.results):{};
+      const aT=(a&&a.aTeam)||guide[mid]?.aTeam||"TBC";
+      const bT=(a&&a.bTeam)||guide[mid]?.bTeam||"TBC";
+      push(s[0],{id:"KO"+mid,kind:"ko",home:aT,away:bT,time:s[1],roundName:KO_NAMES[rk],
+        resultStr:(a&&a.a!=null&&a.b!=null)?`${a.a}–${a.b}`:null});
+    });
+  });
+  return map;
+}
+function renderToday(host){
+  const byDate=allFixturesByDate();
+  const allDates=Object.keys(byDate).sort();
+  if(ui.todayDate===undefined)ui.todayDate=ukToday();
+  // if today has no games, and we're defaulting, snap to the next date that does
+  if(!byDate[ui.todayDate]&&ui._todayAuto!==false){
+    const next=allDates.find(d=>d>=ui.todayDate);
+    ui.todayDate=next||allDates[allDates.length-1]||ui.todayDate;
+  }
+  const cur=ui.todayDate;
+  const idx=allDates.indexOf(cur);
+  const prev=idx>0?allDates[idx-1]:null;
+  const next=idx>=0&&idx<allDates.length-1?allDates[idx+1]:null;
+  const isToday=(cur===ukToday());
+
+  const nav=document.createElement("div");nav.className="card reveal";
+  nav.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <button class="btn btn-ghost" id="dPrev" ${prev?"":"disabled"} style="width:auto;margin:0;padding:10px 14px;">‹</button>
+      <div style="text-align:center;flex:1;">
+        <div style="font-family:'Anton';font-size:20px;">${isToday?"Today":prettyDate(cur).split(",")[0]}</div>
+        <div class="tiny">${prettyDate(cur)}</div>
+      </div>
+      <button class="btn btn-ghost" id="dNext" ${next?"":"disabled"} style="width:auto;margin:0;padding:10px 14px;">›</button>
+    </div>
+    ${!isToday?`<button class="btn btn-ghost" id="dToday" style="margin-top:8px;">Jump to today</button>`:""}`;
+  host.appendChild(nav);
+  if(prev)nav.querySelector("#dPrev").onclick=()=>{ui.todayDate=prev;ui._todayAuto=false;render();};
+  if(next)nav.querySelector("#dNext").onclick=()=>{ui.todayDate=next;ui._todayAuto=false;render();};
+  const jt=nav.querySelector("#dToday");if(jt)jt.onclick=()=>{ui.todayDate=ukToday();ui._todayAuto=true;render();};
+
+  const games=(byDate[cur]||[]).slice().sort((a,b)=>a.time.localeCompare(b.time));
+  const c=document.createElement("div");c.className="card reveal";
+  if(!games.length){
+    c.innerHTML=`<p class="lead" style="text-align:center;">No games on this day.</p>`;
+  }else{
+    c.innerHTML=`<h2 style="font-size:18px;">${games.length} game${games.length===1?"":"s"} ${isToday?"today":"this day"}</h2><p class="lead">Kick-off times shown in UK time.</p>`;
+    games.forEach(gm=>{
+      const row=document.createElement("div");row.className="match";
+      const mid=gm.time;
+      const scoreOrTime=gm.resultStr
+        ? `<div style="font-family:'Anton';font-size:22px;">${gm.resultStr}</div>`
+        : `<div style="font-family:'Anton';font-size:18px;color:var(--gold);">${gm.time}</div>`;
+      row.innerHTML=`${gm.kind==="ko"?`<div class="mdtag">${gm.roundName}</div>`:`<div class="mdtag">Group ${gm.id.split("-")[0]}</div>`}
+        <div class="teams">
+          <div class="team"><span class="flag">${FLAGS[gm.home]||"⚽"}</span><span class="tname">${short(gm.home)}</span></div>
+          <div class="vs">${scoreOrTime}</div>
+          <div class="team"><span class="flag">${FLAGS[gm.away]||"⚽"}</span><span class="tname">${short(gm.away)}</span></div>
+        </div>
+        ${gm.resultStr?`<div class="tiny" style="text-align:center;margin-top:4px;color:#8aa0c2;">Full time</div>`:""}`;
+      c.appendChild(row);
+    });
+  }
+  host.appendChild(c);
+}
+
 function renderFacts(host){
   const res=LG.results;
   const tally=(res.scorers||[]).slice().filter(s=>s&&s.name).sort((a,b)=>(b.goals||0)-(a.goals||0)||a.name.localeCompare(b.name));
@@ -966,8 +1068,21 @@ function renderFacts(host){
   tc.innerHTML=`<h2>👟 Top Scorers</h2><p class="lead">Running tally across the tournament. For interest only — this doesn't affect league points.</p>${trows}`;
   host.appendChild(tc);
 
+  // Disciplinary (cards) tally
+  const cards=(res.cards||[]).slice().filter(s=>s&&s.name).sort((a,b)=>((b.red||0)*2+(b.yellow||0))-((a.red||0)*2+(a.yellow||0))||a.name.localeCompare(b.name));
+  const dc=document.createElement("div");dc.className="card reveal";
+  let drows=cards.length?cards.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?` <small>${esc(s.team)}</small>`:""}</div><div style="display:flex;gap:6px;align-items:center;"><span style="background:#f4c430;color:#06182f;border-radius:4px;padding:2px 7px;font-family:'Anton';font-size:13px;">${s.yellow||0}🟨</span><span style="background:#e23744;color:#fff;border-radius:4px;padding:2px 7px;font-family:'Anton';font-size:13px;">${s.red||0}🟥</span></div></div>`).join(""):`<p class="tiny">No card data imported yet.</p>`;
+  dc.innerHTML=`<h2>🟨 Cards Tally</h2><p class="lead">Yellow and red cards per player. Info only.</p>${drows}`;
+  host.appendChild(dc);
+
   const fc=document.createElement("div");fc.className="card reveal";
-  let html=`<h2>📋 Match Facts</h2><p class="lead">Results and goalscorers as they come in.</p>`;
+  let html=`<h2>📋 Match Facts</h2><p class="lead">Results, goalscorers and cards as they come in.</p>`;
+  function factLines(f){
+    let out="";
+    if(f.scorers)out+=`<div class="tiny" style="margin-top:2px;color:#9fb0cc;">⚽ ${esc(f.scorers)}</div>`;
+    if(f.cards)out+=`<div class="tiny" style="margin-top:2px;color:#c98a92;">🟨🟥 ${esc(f.cards)}</div>`;
+    return out;
+  }
   let anyGroup=false, gblocks="";
   GL.forEach(g=>{
     let rows="";
@@ -976,8 +1091,7 @@ function renderFacts(host){
       if(!a||a.h==null||a.a==null)return;
       anyGroup=true;
       const f=(res.facts&&res.facts[id])||{};
-      const scs=f.scorers?`<div class="tiny" style="margin-top:2px;color:#9fb0cc;">⚽ ${esc(f.scorers)}</div>`:"";
-      rows+=`<div class="summary-line" style="flex-direction:column;align-items:stretch;gap:2px;"><div style="display:flex;justify-content:space-between;"><span>${FLAGS[m[0]]||""} ${short(m[0])} v ${short(m[1])} ${FLAGS[m[1]]||""}</span><b>${a.h}–${a.a}</b></div>${scs}</div>`;
+      rows+=`<div class="summary-line" style="flex-direction:column;align-items:stretch;gap:2px;"><div style="display:flex;justify-content:space-between;"><span>${FLAGS[m[0]]||""} ${short(m[0])} v ${short(m[1])} ${FLAGS[m[1]]||""}</span><b>${a.h}–${a.a}</b></div>${factLines(f)}</div>`;
     });
     if(rows)gblocks+=`<div style="margin-top:10px;"><div class="group-tag" style="display:inline-block;margin-bottom:4px;">Group ${g}</div>${rows}</div>`;
   });
@@ -988,8 +1102,7 @@ function renderFacts(host){
       const a=res.ko[mid];if(!a||a.a==null||a.b==null||!a.aTeam||!a.bTeam)return;
       const f=(res.facts&&res.facts["KO"+mid])||{};
       const pen=(a.pa!=null&&a.pb!=null)?` (pens ${a.pa}–${a.pb})`:"";
-      const scs=f.scorers?`<div class="tiny" style="margin-top:2px;color:#9fb0cc;">⚽ ${esc(f.scorers)}</div>`:"";
-      rows+=`<div class="summary-line" style="flex-direction:column;align-items:stretch;gap:2px;"><div style="display:flex;justify-content:space-between;"><span>${FLAGS[a.aTeam]||""} ${short(a.aTeam)} v ${short(a.bTeam)} ${FLAGS[a.bTeam]||""}</span><b>${a.a}–${a.b}${pen}</b></div>${scs}</div>`;
+      rows+=`<div class="summary-line" style="flex-direction:column;align-items:stretch;gap:2px;"><div style="display:flex;justify-content:space-between;"><span>${FLAGS[a.aTeam]||""} ${short(a.aTeam)} v ${short(a.bTeam)} ${FLAGS[a.bTeam]||""}</span><b>${a.a}–${a.b}${pen}</b></div>${factLines(f)}</div>`;
     });
     if(rows)html+=`<div style="margin-top:10px;"><div class="group-tag" style="display:inline-block;margin-bottom:4px;">${KO_NAMES[rk]}</div>${rows}</div>`;
   });
@@ -998,18 +1111,23 @@ function renderFacts(host){
 
   if(local.isScorer){
     const im=document.createElement("div");im.className="card reveal";
-    im.innerHTML=`<span class="step-pill">Scorer</span><h2 style="font-size:18px;">Import facts & scorers</h2>
-      <p class="lead">Both are info-only and never change league points. Paste from the matching spreadsheets.</p>
+    im.innerHTML=`<span class="step-pill">Scorer</span><h2 style="font-size:18px;">Import facts & stats</h2>
+      <p class="lead">All info-only and never change league points. Paste from the matching spreadsheets.</p>
       <label class="fld">👟 Top-scorer tally</label>
-      <textarea id="impScorers" class="txt" style="height:90px;font-family:monospace;font-size:12px;" placeholder="Paste scorer rows (Player, Team, Goals)…"></textarea>
+      <textarea id="impScorers" class="txt" style="height:80px;font-family:monospace;font-size:12px;" placeholder="Paste scorer rows (Player, Team, Goals)…"></textarea>
       <button class="btn btn-gold" id="impScorersBtn">Import scorer tally</button>
       <div id="impScorersMsg" class="hint" style="margin-top:6px;"></div>
-      <label class="fld" style="margin-top:14px;">📋 Match goalscorers</label>
-      <textarea id="impFacts" class="txt" style="height:90px;font-family:monospace;font-size:12px;" placeholder="Paste match-facts rows (Match ID then scorers)…"></textarea>
+      <label class="fld" style="margin-top:14px;">🟨 Cards tally</label>
+      <textarea id="impCards" class="txt" style="height:80px;font-family:monospace;font-size:12px;" placeholder="Paste card rows (Player, Team, Yellow, Red)…"></textarea>
+      <button class="btn btn-gold" id="impCardsBtn">Import cards tally</button>
+      <div id="impCardsMsg" class="hint" style="margin-top:6px;"></div>
+      <label class="fld" style="margin-top:14px;">📋 Match facts (scorers + cards)</label>
+      <textarea id="impFacts" class="txt" style="height:80px;font-family:monospace;font-size:12px;" placeholder="Paste match-facts rows (Match ID, Scorers, Cards)…"></textarea>
       <button class="btn btn-gold" id="impFactsBtn">Import match facts</button>
       <div id="impFactsMsg" class="hint" style="margin-top:6px;"></div>`;
     host.appendChild(im);
     im.querySelector("#impScorersBtn").onclick=()=>importScorers(im.querySelector("#impScorers").value);
+    im.querySelector("#impCardsBtn").onclick=()=>importCards(im.querySelector("#impCards").value);
     im.querySelector("#impFactsBtn").onclick=()=>importFacts(im.querySelector("#impFacts").value);
   }
 }
@@ -1040,13 +1158,34 @@ function importFacts(text){
     let id=c.find(x=>/^[A-L]-[0-5]$/.test(x)||/^KO\d{2,3}$/.test(x));
     if(!id)return;
     const idIdx=c.indexOf(id);
-    const scorers=c.slice(idIdx+1).filter(x=>x).join(", ");
-    if(!scorers)return;
+    // After the ID: column 1 = scorers, column 2 = cards (both free text, optional)
+    const scorers=(c[idIdx+1]||"").trim();
+    const cards=(c[idIdx+2]||"").trim();
+    if(!scorers&&!cards)return;
     if(!LG.results.facts)LG.results.facts={};
-    LG.results.facts[id]={scorers};n++;
+    LG.results.facts[id]={scorers,cards};n++;
   });
-  if(!n){msg.innerHTML=`<span style="color:var(--red)">No match facts found.</span> Expected tab-separated: Match ID then scorers.`;return;}
+  if(!n){msg.innerHTML=`<span style="color:var(--red)">No match facts found.</span> Expected tab-separated: Match ID, then Scorers, then Cards.`;return;}
   saveResultsSoon();toast(`Imported facts for ${n} matches`);render();
+}
+function importCards(text){
+  const msg=document.getElementById("impCardsMsg");
+  const lines=(text||"").split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
+  const out=[];
+  lines.forEach(line=>{
+    const c=line.split(/\t|,/).map(x=>x.trim());
+    if(c.length<2)return;
+    // Player, Team, Yellow, Red  (last two numeric)
+    const nums=c.map((x,i)=>({x,i})).filter(o=>/^\d{1,3}$/.test(o.x));
+    if(nums.length<1)return;
+    const name=c[0]; if(!name||/player/i.test(name))return;
+    let team="",yellow=0,red=0;
+    if(nums.length>=2){yellow=+nums[nums.length-2].x;red=+nums[nums.length-1].x;team=c.length>=4?c[1]:"";}
+    else{yellow=+nums[nums.length-1].x;team=c.length>=3?c[1]:"";}
+    out.push({name,team,yellow,red});
+  });
+  if(!out.length){msg.innerHTML=`<span style="color:var(--red)">No card rows found.</span> Expected: Player, Team, Yellow, Red.`;return;}
+  LG.results.cards=out;saveResultsSoon();toast(`Imported ${out.length} card records`);render();
 }
 
 function renderInfo(host){
@@ -1108,10 +1247,12 @@ function renderLeaderboard(host){
   c.innerHTML=`<h2>${esc(LG.name)} — Leaderboard</h2><p class="lead">Live standings, scored against the official results so far. Updates automatically as ${esc(LG.scorerName)} enters scores.</p>`;
   players.forEach((p,i)=>{
     const me=p.pid===local.playerId;
-    const row=document.createElement("div");row.className=`lbrow r${i+1} ${me?'me':''}`;
+    const row=document.createElement("div");row.className=`lbrow r${i+1} ${me?'me':''}`;row.style.cursor="pointer";
     row.innerHTML=`<div class="rank">${i+1}</div><div class="nm">${esc(p.name)}${me?' <small>that’s you</small>':`<small>${p.sc.exact} exact · ${p.sc.result} results · ${p.sc.golden} golden</small>`}</div><div class="sc">${p.sc.total}</div>`;
+    row.onclick=()=>openPlayerReveal(p.pid);
     c.appendChild(row);
   });
+  const hint=document.createElement("p");hint.className="tiny";hint.style.marginTop="8px";hint.textContent="Tap a player to see their predictions for any round that's locked.";c.appendChild(hint);
   if(players.length===1){const e=document.createElement("p");e.className="tiny";e.style.marginTop="10px";e.innerHTML=`Share code <b>${esc(local.leagueId)}</b> so others can join.`;c.appendChild(e);}
   host.appendChild(c);
 
@@ -1135,9 +1276,95 @@ function renderLeaderboard(host){
 }
 
 /* ============================================================
-   HELPERS / OVERLAY / SETTINGS
+   REVEAL LOCKED PREDICTIONS  (only for rounds that are locked)
    ============================================================ */
-function esc(s){return (s==null?"":(""+s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function lockedStages(res){return STAGES.filter(s=>predLocked(s,res));}
+function predResultPts(p,a){ // returns {pred, actual, pts} for a group match
+  if(!p||p.h==null||p.a==null)return null;
+  if(!a||a.h==null||a.a==null)return {pred:`${p.h}–${p.a}`,actual:null,pts:null};
+  const pts=scoreLine(p.h,p.a,a.h,a.a);
+  return {pred:`${p.h}–${p.a}`,actual:`${a.h}–${a.a}`,pts};
+}
+function ptTag(pts){if(pts==null)return `<span class="ptpill zero" style="font-size:11px;">–</span>`;return `<span class="${ptPillClass(pts)}" style="font-size:11px;">${pts}</span>`;}
+function openPlayerReveal(pid){
+  busy("");const o=document.getElementById("ov");
+  const res=LG.results;const pl=LG.players[pid]||{};const pred=pl.pred||{};
+  const locked=lockedStages(res);
+  let body="";
+  if(!locked.length){
+    body=`<p class="lead">No rounds are locked yet. Once a round locks, everyone's picks for it appear here.</p>`;
+  }else{
+    locked.forEach(stage=>{
+      if(stage==="groups"){
+        let rows="";
+        GL.forEach(g=>{
+          fixturesFor(g).forEach((m,mi)=>{
+            const id=`${g}-${mi}`;const p=(pred.group||{})[id];if(!p||p.h==null||p.a==null)return;
+            const a=res.group[id];const pr=predResultPts(p,a);
+            rows+=`<div class="summary-line"><span>${short(m[0])} v ${short(m[1])}</span><span><b>${pr.pred}</b>${pr.actual?` <span style="color:#8aa0c2">(act ${pr.actual})</span>`:""} ${ptTag(pr.pts)}</span></div>`;
+          });
+        });
+        body+=`<div class="group-tag" style="display:inline-block;margin:12px 0 4px;">Group stage</div>${rows||'<p class="tiny">No group picks made.</p>'}`;
+      }else{
+        let rows="";
+        KO_LIST[stage].forEach(mid=>{
+          const p=(pred.ko||{})[mid];if(!p||p.a==null||p.b==null||!p.aTeam||!p.bTeam)return;
+          const a=res.ko[mid];
+          let pts=null,act=null;
+          if(a&&a.a!=null&&a.b!=null&&a.aTeam&&a.bTeam){
+            act=`${a.a}–${a.b}`;
+            if(p.aTeam===a.aTeam&&p.bTeam===a.bTeam)pts=scoreLine(p.a,p.b,a.a,a.b);
+            else if(p.aTeam===a.bTeam&&p.bTeam===a.aTeam)pts=scoreLine(p.b,p.a,a.a,a.b);
+          }
+          rows+=`<div class="summary-line"><span>${short(p.aTeam)} v ${short(p.bTeam)}</span><span><b>${p.a}–${p.b}</b>${act?` <span style="color:#8aa0c2">(act ${act})</span>`:""} ${ptTag(pts)}</span></div>`;
+        });
+        if(rows)body+=`<div class="group-tag" style="display:inline-block;margin:12px 0 4px;">${KO_NAMES[stage]}</div>${rows}`;
+      }
+    });
+    // golden picks if locked (tournament started)
+    if(goldenLocked(res)){
+      body+=`<div class="group-tag" style="display:inline-block;margin:12px 0 4px;">Golden picks</div>
+        <div class="summary-line"><span>🏆 Champion</span><b>${esc(pred.winner)||"(none)"}</b></div>
+        <div class="summary-line"><span>👟 Top scorer</span><b>${esc(pred.scorer)||"(none)"}</b></div>`;
+    }
+  }
+  o.innerHTML=`<div class="card" style="max-width:460px;width:92%;max-height:86vh;overflow:auto;">
+    <h2>${esc(pl.name||"Player")}'s predictions</h2>
+    <p class="lead">Shown only for rounds that are locked. The number pill is points scored.</p>
+    ${body}
+    <button class="btn btn-ghost" id="revClose" style="margin-top:12px;">Close</button>
+  </div>`;
+  o.querySelector("#revClose").onclick=()=>unbusy();
+}
+// Per-match reveal: everyone's pick for one game (only when that stage is locked)
+function openMatchReveal(kind,id){
+  const res=LG.results;
+  // determine stage of this match
+  let stage,label,teams;
+  if(kind==="group"){stage="groups";const m=findGroupMatch(id);teams=[m[0],m[1]];label=`${short(m[0])} v ${short(m[1])}`;}
+  else{stage=kind;const a=res.ko[id];teams=a?[a.aTeam,a.bTeam]:["?","?"];label=`${short(teams[0]||"TBD")} v ${short(teams[1]||"TBD")}`;}
+  if(!predLocked(stage,res)){toast("Picks reveal once this round locks");return;}
+  busy("");const o=document.getElementById("ov");
+  const rows=Object.keys(LG.players).map(pid=>{
+    const pl=LG.players[pid];const pred=pl.pred||{};
+    let pickStr="—",pts=null;
+    if(kind==="group"){const p=(pred.group||{})[id];if(p&&p.h!=null&&p.a!=null){pickStr=`${p.h}–${p.a}`;const a=res.group[id];if(a&&a.h!=null)pts=scoreLine(p.h,p.a,a.h,a.a);}}
+    else{const p=(pred.ko||{})[id];if(p&&p.a!=null&&p.b!=null){pickStr=`${p.a}–${p.b}`;const a=res.ko[id];if(a&&a.a!=null&&a.aTeam){if(p.aTeam===a.aTeam&&p.bTeam===a.bTeam)pts=scoreLine(p.a,p.b,a.a,a.b);else if(p.aTeam===a.bTeam&&p.bTeam===a.aTeam)pts=scoreLine(p.b,p.a,a.a,a.b);}}}
+    return {name:pl.name,pickStr,pts};
+  }).sort((x,y)=>(y.pts||0)-(x.pts||0));
+  let actLine="";
+  if(kind==="group"){const a=res.group[id];if(a&&a.h!=null)actLine=`Actual result: <b>${a.h}–${a.a}</b>`;}
+  else{const a=res.ko[id];if(a&&a.a!=null)actLine=`Actual result: <b>${a.a}–${a.b}</b>`;}
+  o.innerHTML=`<div class="card" style="max-width:440px;width:92%;max-height:86vh;overflow:auto;">
+    <h2>${label}</h2>
+    ${actLine?`<p class="lead">${actLine}</p>`:`<p class="lead">Not played yet.</p>`}
+    ${rows.map(r=>`<div class="summary-line"><span>${esc(r.name)}</span><span><b>${r.pickStr}</b> ${ptTag(r.pts)}</span></div>`).join("")}
+    <button class="btn btn-ghost" id="mrClose" style="margin-top:12px;">Close</button>
+  </div>`;
+  o.querySelector("#mrClose").onclick=()=>unbusy();
+}
+
+
 let tt;function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2600);}
 function busy(msg){
   let o=document.getElementById("ov");
