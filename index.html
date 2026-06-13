@@ -190,7 +190,7 @@ const firebaseConfig = {
   messagingSenderId: "106750357999",
   appId: "1:106750357999:web:002566f63767f284aa861a"
 };
-let db=null, fbReady=false, fbError=null;
+let db=null, fbReady=false, fbError=null, loadError=null;
 try{
   firebase.initializeApp(firebaseConfig);
   db=firebase.firestore();
@@ -481,9 +481,24 @@ function switchToLeague(leagueId){
   listenLeague();
   render();
 }
-function listenLeague(){
+async function listenLeague(){
+  // Wait for Firebase anonymous auth to be ready before attaching the
+  // Firestore listener — otherwise security rules reject it and the app
+  // can hang on "Loading league…" forever (the spinner of doom).
+  try{
+    await waitForFb();
+  }catch(e){
+    loadError=e.message||"Could not connect.";
+    render();
+    return;
+  }
+  loadError=null;
   if(unsub)unsub();
+  let gotData=false;
+  // Watchdog: if no data arrives within 9s, show a retry screen instead of spinning forever.
+  const watchdog=setTimeout(()=>{ if(!gotData&&!LG){ loadError="Taking longer than expected — tap Retry."; render(); } },9000);
   unsub=leagueRef(local.leagueId).onSnapshot(snap=>{
+    gotData=true;clearTimeout(watchdog);
     if(!snap.exists){toast("League not found");return;}
     LG=snap.data();
     if(!LG.results)LG.results=blankResults();
@@ -495,7 +510,7 @@ function listenLeague(){
     const mem=memberships.find(x=>x.leagueId===local.leagueId);
     if(mem&&LG.name&&mem.name!==LG.name){mem.name=LG.name;saveLocal();}
     render();
-  },err=>{toast("Connection issue — tap Refresh");});
+  },err=>{clearTimeout(watchdog);loadError="Connection issue — tap Retry.";render();});
 }
 // Scorer tools: delete / rename a player
 async function deletePlayer(pid){
@@ -546,7 +561,20 @@ function render(){
   if(!local.leagueId||!LG){
     document.getElementById("savebar").style.display="none";
     chip.innerHTML="";
-    if(local.leagueId&&!LG){app.innerHTML='<div class="card center"><div class="spin"></div><p class="tiny" style="margin-top:12px;">Loading league…</p></div>';return;}
+    if(local.leagueId&&!LG){
+      if(loadError){
+        app.innerHTML=`<div class="card center"><p class="lead" style="text-align:center;">${esc(loadError)}</p><button class="btn btn-gold" id="retryLoad" style="margin-top:10px;">Retry</button><button class="btn btn-ghost" id="leaveStuck" style="margin-top:8px;">Leave this league</button></div>`;
+        const rb=document.getElementById("retryLoad");if(rb)rb.onclick=()=>{loadError=null;render();listenLeague();};
+        const lb=document.getElementById("leaveStuck");if(lb)lb.onclick=()=>{
+          // escape hatch if a league is genuinely unreachable
+          memberships=memberships.filter(m=>m.leagueId!==local.leagueId);
+          local={leagueId:"",playerId:"",isScorer:false};saveLocal();loadError=null;
+          if(unsub)unsub();LG=null;render();
+        };
+        return;
+      }
+      app.innerHTML='<div class="card center"><div class="spin"></div><p class="tiny" style="margin-top:12px;">Loading league…</p></div>';return;
+    }
     return renderLobby(app);
   }
   // In a league
