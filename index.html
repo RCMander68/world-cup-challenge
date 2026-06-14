@@ -1186,14 +1186,23 @@ function importFacts(text){
     let id=c.find(x=>/^[A-L]-[0-5]$/.test(x)||/^KO\d{2,3}$/.test(x));
     if(!id)return;
     const idIdx=c.indexOf(id);
-    // After the ID: column 1 = scorers, column 2 = cards (both free text, optional)
-    const scorers=(c[idIdx+1]||"").trim();
-    const cards=(c[idIdx+2]||"").trim();
+    // Everything after the ID. The spreadsheet has extra columns we must skip:
+    //  - the Group column (a lone letter A–L)
+    //  - the Match column (a fixture name containing " v ")
+    // What's left, in order, is: Goalscorers, then Cards.
+    const rest=c.slice(idIdx+1).map(x=>x.trim()).filter(x=>{
+      if(x==="")return false;
+      if(/^[A-L]$/.test(x))return false;             // group letter
+      if(/\sv\s/i.test(x)&&!/\d/.test(x))return false; // "Team v Team" with no digits = match name
+      return true;
+    });
+    const scorers=(rest[0]||"").trim();
+    const cards=(rest[1]||"").trim();
     if(!scorers&&!cards)return;
     if(!LG.results.facts)LG.results.facts={};
     LG.results.facts[id]={scorers,cards};n++;
   });
-  if(!n){msg.innerHTML=`<span style="color:var(--red)">No match facts found.</span> Expected tab-separated: Match ID, then Scorers, then Cards.`;return;}
+  if(!n){msg.innerHTML=`<span style="color:var(--red)">No match facts found.</span> Paste the rows from the Match Facts sheet (Match ID, Group, Match, Goalscorers, Cards) — extra columns are handled automatically.`;return;}
   saveResultsSoon();toast(`Imported facts for ${n} matches`);render();
 }
 function importCards(text){
