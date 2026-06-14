@@ -1139,7 +1139,7 @@ function renderFacts(host){
 
   if(local.isScorer){
     const im=document.createElement("div");im.className="card reveal";
-    im.innerHTML=`<span class="step-pill">Scorer</span><h2 style="font-size:18px;">Import facts & stats</h2>
+    im.innerHTML=`<span class="step-pill">Scorer</span><h2 style="font-size:18px;">Import facts & stats <span style="font-size:11px;color:var(--gold)">v2</span></h2>
       <p class="lead">All info-only and never change league points. Paste from the matching spreadsheets.</p>
       <label class="fld">👟 Top-scorer tally</label>
       <textarea id="impScorers" class="txt" style="height:80px;font-family:monospace;font-size:12px;" placeholder="Paste scorer rows (Player, Team, Goals)…"></textarea>
@@ -1150,7 +1150,7 @@ function renderFacts(host){
       <button class="btn btn-gold" id="impCardsBtn">Import cards tally</button>
       <div id="impCardsMsg" class="hint" style="margin-top:6px;"></div>
       <label class="fld" style="margin-top:14px;">📋 Match facts (scorers + cards)</label>
-      <textarea id="impFacts" class="txt" style="height:80px;font-family:monospace;font-size:12px;" placeholder="Paste match-facts rows (Match ID, Scorers, Cards)…"></textarea>
+      <textarea id="impFacts" class="txt" style="height:80px;font-family:monospace;font-size:12px;" placeholder="Paste the Match Facts rows straight from the sheet — all columns, ID first. ✓v2"></textarea>
       <button class="btn btn-gold" id="impFactsBtn">Import match facts</button>
       <div id="impFactsMsg" class="hint" style="margin-top:6px;"></div>`;
     host.appendChild(im);
