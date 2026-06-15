@@ -98,6 +98,10 @@
 
   .ko-match{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:15px;padding:11px;margin:9px 0;}
   .ko-match .lbl{font-family:'Archivo Narrow';font-weight:700;letter-spacing:.07em;text-transform:uppercase;font-size:10.5px;color:#8aa0c2;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px;}
+  .ko-match .ko-when{font-weight:600;color:var(--gold);text-transform:none;letter-spacing:0;font-size:10px;white-space:nowrap;}
+  .ko-side .tn.shortlist{font-size:11px;line-height:1.25;color:#cdd9ec;}
+  .ko-side .tn.feeder{font-size:10.5px;line-height:1.25;color:#9fb0cc;font-style:italic;}
+  .ko-side .tn.shortlist .orsep{color:var(--gold);font-style:italic;font-weight:600;font-size:9px;}
   .ko-teams{display:grid;grid-template-columns:1fr 78px 1fr;gap:6px;align-items:center;}
   .ko-side{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;}
   .ko-side .tn{font-family:'Archivo Narrow';font-weight:700;font-size:12px;line-height:1.1;}
@@ -301,6 +305,73 @@ function resolveR32(res){
 function resolveLater(round,res){const out={};KO_LIST[round].forEach(mid=>{const[x,y]=WC_DATA.bracket[mid];const a=x[0]==="L"?loserOf(x.slice(1),res):winnerOf(x,res);const b=y[0]==="L"?loserOf(y.slice(1),res):winnerOf(y,res);out[mid]={aTeam:a,bTeam:b,aTok:x,bTok:y};});return out;}
 function resolveStage(stage,res){return stage==="r32"?resolveR32(res).out:resolveLater(stage,res);}
 
+// ============================================================
+//  POSSIBLE QUALIFIERS — "X or Y" for an as-yet-unsettled W_/RU_ slot.
+//  Enumerates every remaining W/D/L outcome in the group (3^n, n<=6) and finds
+//  which teams can still finish 1st (winner) or top-2 (runner-up). Used ONLY to
+//  show a shortlist when it has narrowed to EXACTLY TWO teams. Winners & runners-up
+//  only — best-third slots are never shortlisted (kept as TBD).
+//  Safe by design: where a points-tie is possible it includes all tied teams, so it
+//  errs toward staying TBD (3+) rather than wrongly showing a clean two.
+// ============================================================
+function groupQualifyChances(g,res){
+  const teams=GROUPS[g];
+  const fix=fixturesFor(g);
+  const base={}; teams.forEach(t=>base[t]={pts:0});
+  const remaining=[];
+  fix.forEach((m,i)=>{
+    const cell=res.group[`${g}-${i}`];
+    if(cell&&cell.h!=null&&cell.a!=null){
+      const[hT,aT]=m,h=+cell.h,a=+cell.a;
+      if(h>a)base[hT].pts+=3; else if(a>h)base[aT].pts+=3; else {base[hT].pts++;base[aT].pts++;}
+    } else { remaining.push(m); }
+  });
+  const n=remaining.length;
+  const canWin=new Set(), canTop2=new Set();
+  const total=Math.pow(3,n);
+  for(let mask=0;mask<total;mask++){
+    const pts={}; teams.forEach(t=>pts[t]=base[t].pts);
+    let m=mask;
+    for(let r=0;r<n;r++){
+      const out=m%3; m=Math.floor(m/3);
+      const[hT,aT]=remaining[r];
+      if(out===0)pts[hT]+=3; else if(out===1)pts[aT]+=3; else {pts[hT]++;pts[aT]++;}
+    }
+    const maxP=Math.max(...teams.map(t=>pts[t]));
+    teams.forEach(t=>{ if(pts[t]===maxP) canWin.add(t); });
+    teams.forEach(t=>{ const above=teams.filter(o=>pts[o]>pts[t]).length; if(above<=1) canTop2.add(t); });
+  }
+  return {canWin:[...canWin], canTop2:[...canTop2]};
+}
+// For a token like "W_A" or "RU_A": if unsettled, return exactly-two shortlist or null.
+function slotShortlist(tokenStr,res){
+  if(!tokenStr)return null;
+  let g,chances;
+  if(tokenStr.startsWith("W_")){g=tokenStr[2];chances=groupQualifyChances(g,res).canWin;}
+  else if(tokenStr.startsWith("RU_")){g=tokenStr[3];chances=groupQualifyChances(g,res).canTop2;}
+  else return null; // best-third (T_) never shortlisted
+  if(chances.length===2)return chances;
+  return null;
+}
+// A human-readable label for an UNRESOLVED knockout slot, by round.
+//  - R32 source tokens: "Winner of Group A" / "Runner-up of Group A" / "X or Y" shortlist / "Best 3rd"
+//  - R16+ source tokens are match numbers (or "L"+num for the 3rd-place feeders): "Winner of Match 73"
+function slotLabel(round,mid,side,res){
+  if(round==="r32"){
+    const tok=WC_DATA.r32[mid][side==="a"?0:1];
+    const sl=slotShortlist(tok,res);
+    if(sl)return esc(sl[0])+" or "+esc(sl[1]);
+    if(tok.startsWith("W_"))return "Winner Group "+tok[2];
+    if(tok.startsWith("RU_"))return "Runner-up Group "+tok[3];
+    if(tok.startsWith("T_"))return "Best 3rd";
+    return "TBD";
+  }
+  // R16 onwards: feeder is a match number, or L<match> for 3rd-place play-off
+  const tok=WC_DATA.bracket[mid][side==="a"?0:1];
+  if(tok[0]==="L")return "Loser of Match "+tok.slice(1);
+  return "Winner of Match "+tok;
+}
+
 /* ============================================================
    STAGE LOCK / UNLOCK LOGIC
    A prediction stage LOCKS when its first real result appears,
@@ -318,6 +389,29 @@ const STAGE_LOCK_MS = {
   f:      Date.parse("2026-07-18T21:00:00Z")  // 22:00 BST Sat 18 Jul (3rd-place + Final lock together)
 };
 const TOURNAMENT_LOCK_MS = STAGE_LOCK_MS.groups;
+
+// ============================================================
+//  KNOCKOUT PREDICTIONS OPEN TIME  ← EDIT THIS ONE LINE to open earlier
+//  Knockout fixtures cannot be predicted until this moment passes.
+//  Default: 05:00 BST Friday 26 June 2026 (04:00 UTC).
+//  To open the knockouts sooner, just change the date/time below.
+// ============================================================
+const KNOCKOUT_OPEN_MS = Date.parse("2026-06-20T04:00:00Z"); // 05:00 BST Sat 20 Jun
+function knockoutsOpen(){ return Date.now() >= KNOCKOUT_OPEN_MS; }
+// Per-match kick-off time for a knockout match id (from KO_SCHED), in ms. null if unknown.
+function koMatchKickoffMs(mid){
+  const s=KO_SCHED[mid]; if(!s) return null;
+  // s = [ "YYYY-MM-DD", "HH:MM" ] in UK local time. Build a UTC ms via BST (+1) offset.
+  // During the tournament (Jun-Jul) the UK is on BST = UTC+1, so subtract 1h to get UTC.
+  return Date.parse(s[0]+"T"+s[1]+":00+01:00");
+}
+// A specific knockout match is locked once its own kick-off passes, or its result is in.
+function koMatchLocked(mid,res){
+  const r=res&&res.ko?res.ko[mid]:null;
+  if(r&&r.a!=null&&r.b!=null) return true;          // result entered
+  const k=koMatchKickoffMs(mid);
+  return k!=null && Date.now()>=k;                   // kickoff passed
+}
 function tournamentStarted(){return Date.now() >= TOURNAMENT_LOCK_MS;}
 function stageTimeLocked(stage){const t=STAGE_LOCK_MS[stage];return t!=null && Date.now()>=t;}
 // Golden picks (champion + top scorer) lock at kick-off, or once any group result is in.
@@ -335,11 +429,12 @@ function predLocked(stage,res){
   if(stageTimeLocked(stage))return true;
   return stageHasAnyResult(stage,res);
 }
-// A stage is UNLOCKED for prediction if it's groups, or the previous stage's results are complete
+// A stage is UNLOCKED for prediction if it's groups, or — for knockouts — once the
+// knockout OPEN gate has passed. All knockout rounds open together at the gate; unresolved
+// slots show their feeder ("Winner of Match 73") and resolve live as results are entered.
 function stageUnlocked(stage,res){
   if(stage==="groups")return true;
-  const prev=STAGES[STAGES.indexOf(stage)-1];
-  return stageResultsComplete(prev,res);
+  return knockoutsOpen();   // one gate opens R32, R16, QF, SF, Final together
 }
 function stageStatus(stage,res){
   if(!stageUnlocked(stage,res))return "waiting";   // previous round not done
@@ -363,11 +458,10 @@ function scorePlayer(pred,res,actualScorer){
   Object.keys(KO_NAMES).forEach(rk=>KO_LIST[rk].forEach(mid=>{
     const p=pred.ko[mid],a=res.ko[mid];
     if(!p||!a||a.a==null||a.b==null||p.a==null||p.b==null)return;
-    if(!p.aTeam||!p.bTeam||!a.aTeam||!a.bTeam)return;
-    let pl;
-    if(p.aTeam===a.aTeam&&p.bTeam===a.bTeam)pl=scoreLine(p.a,p.b,a.a,a.b);
-    else if(p.aTeam===a.bTeam&&p.bTeam===a.aTeam)pl=scoreLine(p.b,p.a,a.a,a.b);
-    else return;
+    // Position-based scoring: the player's score for the left slot (p.a) is compared to the
+    // actual left slot (a.a), regardless of which team filled it. This lets predictions made
+    // before teams were known still score correctly once the slot resolves.
+    const pl=scoreLine(p.a,p.b,a.a,a.b);
     if(pl!=null){total+=pl;koPts+=pl;if(pl===6)exact++;else if(pl===3)result++;}
   }));
   const champ=winnerOf("104",res);
@@ -787,37 +881,44 @@ function koActualStrip(mid){
   if(!a||a.a==null||a.b==null||!a.aTeam||!a.bTeam)return "";
   const p=myPred().ko[mid];
   let pts=null;
-  if(p&&p.a!=null&&p.b!=null&&p.aTeam&&p.bTeam){
-    if(p.aTeam===a.aTeam&&p.bTeam===a.bTeam)pts=scoreLine(p.a,p.b,a.a,a.b);
-    else if(p.aTeam===a.bTeam&&p.bTeam===a.aTeam)pts=scoreLine(p.b,p.a,a.a,a.b);
-  }
+  if(p&&p.a!=null&&p.b!=null){pts=scoreLine(p.a,p.b,a.a,a.b);} // position-based
   const pen=(a.pa!=null&&a.pb!=null)?` <span style="color:#8aa0c2">(pens ${a.pa}–${a.pb})</span>`:"";
   const ptHtml=pts==null?`<span class="ptpill zero">no pick</span>`:`<span class="${ptPillClass(pts)}">${pts} pt${pts===1?"":"s"}</span>`;
   return `<div class="actbar"><span class="act">Actual <b>${a.aTeam} ${a.a}–${a.b} ${a.bTeam}</b>${pen}</span>${ptHtml}</div>`;
 }
 
 function renderPredictKO(host,round,res,st){
-  const locked=(st==="locked");
-  const guide=resolveStage(round,res); // real matchups (this stage is open => prev complete => these resolve)
+  const guide=resolveStage(round,res); // resolved team names where known
   KO_LIST[round].forEach(mid=>{
-    const p=myPred().ko[mid]||{aTeam:"",bTeam:"",a:null,b:null};
+    const p=myPred().ko[mid]||{a:null,b:null};
     const gA=guide[mid]?.aTeam,gB=guide[mid]?.bTeam;
-    // In this design, once a round is open the real teams are known, so we show them fixed and ask only for scores.
-    const aT=gA||p.aTeam, bT=gB||p.bTeam;
+    // Display: resolved team, else shortlist (R32 only), else feeder label.
+    function sideDisp(side,team){
+      if(team)return `<span class="flag">${FLAGS[team]||"⚽"}</span><span class="tn">${team}</span>`;
+      const lab=slotLabel(round,mid,side,res);
+      return `<span class="tn feeder">${lab}</span>`;
+    }
+    const locked = koMatchLocked(mid,res);   // per-match: locks at its own kickoff / when result in
     const lbl=round==="f"?"🏆 The Final":`${KO_NAMES[round]} · Match ${mid}`;
+    const ko=KO_SCHED[mid];
+    const koTxt = (!locked && ko) ? `<span class="ko-when">locks ${shortDate(ko[0])} · ${ko[1]}</span>` : "";
     const b=document.createElement("div");b.className="ko-match";
     const revealBtn=locked?`<div class="revealtap" data-rk="${round}" data-rid="${mid}">👁 See everyone's picks</div>`:"";
-    b.innerHTML=`<div class="lbl"><span>${lbl}</span></div>
+    // Inputs are enabled whenever the match isn't locked — even if teams aren't known yet
+    // (you predict the scoreline for the bracket position; it scores by position once resolved).
+    b.innerHTML=`<div class="lbl"><span>${lbl}</span>${koTxt}</div>
       <div class="ko-teams">
-        <div class="ko-side ${aT?'':'tbd'}"><span class="flag">${aT?(FLAGS[aT]||"⚽"):"❓"}</span><span class="tn">${aT||"TBD"}</span></div>
-        <div class="vs"><input class="score" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="a" value="${p.a??""}" ${locked||!aT?'disabled':''}><span class="dash">–</span><input class="score" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="b" value="${p.b??""}" ${locked||!bT?'disabled':''}></div>
-        <div class="ko-side ${bT?'':'tbd'}"><span class="flag">${bT?(FLAGS[bT]||"⚽"):"❓"}</span><span class="tn">${bT||"TBD"}</span></div>
+        <div class="ko-side ${gA?'':'tbd'}">${sideDisp("a",gA)}</div>
+        <div class="vs"><input class="score" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="a" value="${p.a??""}" ${locked?'disabled':''}><span class="dash">–</span><input class="score" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="b" value="${p.b??""}" ${locked?'disabled':''}></div>
+        <div class="ko-side ${gB?'':'tbd'}">${sideDisp("b",gB)}</div>
       </div>${koActualStrip(mid)}${revealBtn}`;
     host.appendChild(b);
-    // persist the resolved team names onto my prediction so scoring can align
-    if(aT||bT){const kp=LG.players[local.playerId].pred.ko;if(!kp[mid])kp[mid]={a:null,b:null};kp[mid].aTeam=aT;kp[mid].bTeam=bT;}
+    // Store resolved team names onto the prediction when known (for display/reveal).
+    // Scoring is by POSITION, so this is not required for scoring, but keeps names handy.
+    const kp=LG.players[local.playerId].pred.ko;if(!kp[mid])kp[mid]={a:null,b:null};
+    if(gA)kp[mid].aTeam=gA; if(gB)kp[mid].bTeam=gB;
   });
-  if(!locked)host.querySelectorAll("[data-mid]").forEach(inp=>inp.addEventListener("input",e=>{
+  host.querySelectorAll("input[data-mid]:not([disabled])").forEach(inp=>inp.addEventListener("input",e=>{
     const t=e.target,mid=t.dataset.mid;t.value=t.value.replace(/[^0-9]/g,"").slice(0,2);
     const kp=LG.players[local.playerId].pred.ko;if(!kp[mid])kp[mid]={a:null,b:null};
     kp[mid][t.dataset.f]=t.value===""?null:+t.value;savePredSoon();
@@ -1009,6 +1110,11 @@ function prettyDate(iso){
   const dt=new Date(Date.UTC(y,m-1,d));
   return dt.toLocaleDateString("en-GB",{timeZone:"UTC",weekday:"long",day:"numeric",month:"long"});
 }
+function shortDate(iso){
+  const [y,m,d]=iso.split("-").map(Number);
+  const dt=new Date(Date.UTC(y,m-1,d));
+  return dt.toLocaleDateString("en-GB",{timeZone:"UTC",weekday:"short",day:"numeric",month:"short"});
+}
 function allFixturesByDate(){
   // returns {date: [ {id,kind,home,away,time,resultStr} ]}
   const map={};
@@ -1082,6 +1188,37 @@ function renderToday(host){
           <div class="team"><span class="flag">${FLAGS[gm.away]||"⚽"}</span><span class="tname">${short(gm.away)}</span></div>
         </div>
         ${gm.resultStr?`<div class="tiny" style="text-align:center;margin-top:4px;color:#8aa0c2;">Full time</div>`:""}`;
+      // --- player predictions: tap to expand (group games only; respects locking) ---
+      if(gm.kind==="group"){
+        const stage="groups";
+        const locked=predLocked(stage,LG.results);
+        const toggle=document.createElement("div");
+        toggle.className="tiny";
+        toggle.style.cssText="text-align:center;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(255,255,255,.12);cursor:pointer;color:var(--gold);";
+        const open=!!(ui.todayOpen&&ui.todayOpen[gm.id]);
+        if(!locked){
+          toggle.style.cursor="default";toggle.style.color="#8aa0c2";
+          toggle.textContent="🔒 Predictions reveal once this round locks";
+        }else{
+          toggle.textContent=open?"▲ Hide everyone's predictions":"👁 See everyone's predictions";
+          toggle.onclick=()=>{ui.todayOpen=ui.todayOpen||{};ui.todayOpen[gm.id]=!open;render();};
+        }
+        row.appendChild(toggle);
+        if(locked&&open){
+          const panel=document.createElement("div");
+          panel.style.cssText="margin-top:8px;";
+          const res=LG.results;
+          const act=res.group[gm.id];
+          const rows=Object.keys(LG.players).map(pid=>{
+            const pl=LG.players[pid];const p=(pl.pred&&pl.pred.group||{})[gm.id];
+            let pickStr="—",pts=null;
+            if(p&&p.h!=null&&p.a!=null){pickStr=`${p.h}–${p.a}`;if(act&&act.h!=null)pts=scoreLine(p.h,p.a,act.h,act.a);}
+            return {name:pl.name,pickStr,pts};
+          }).sort((x,y)=>(y.pts||0)-(x.pts||0)||x.name.localeCompare(y.name));
+          panel.innerHTML=rows.map(r=>`<div class="summary-line" style="display:flex;justify-content:space-between;padding:5px 2px;font-size:13px;"><span>${esc(r.name)}</span><span><b>${r.pickStr}</b> ${ptTag(r.pts)}</span></div>`).join("")||`<p class="tiny" style="text-align:center;">No predictions.</p>`;
+          row.appendChild(panel);
+        }
+      }
       c.appendChild(row);
     });
   }
@@ -1364,8 +1501,7 @@ function openPlayerReveal(pid){
           let pts=null,act=null;
           if(a&&a.a!=null&&a.b!=null&&a.aTeam&&a.bTeam){
             act=`${a.a}–${a.b}`;
-            if(p.aTeam===a.aTeam&&p.bTeam===a.bTeam)pts=scoreLine(p.a,p.b,a.a,a.b);
-            else if(p.aTeam===a.bTeam&&p.bTeam===a.aTeam)pts=scoreLine(p.b,p.a,a.a,a.b);
+            pts=scoreLine(p.a,p.b,a.a,a.b); // position-based
           }
           rows+=`<div class="summary-line"><span>${short(p.aTeam)} v ${short(p.bTeam)}</span><span><b>${p.a}–${p.b}</b>${act?` <span style="color:#8aa0c2">(act ${act})</span>`:""} ${ptTag(pts)}</span></div>`;
         });
@@ -1400,7 +1536,7 @@ function openMatchReveal(kind,id){
     const pl=LG.players[pid];const pred=pl.pred||{};
     let pickStr="—",pts=null;
     if(kind==="group"){const p=(pred.group||{})[id];if(p&&p.h!=null&&p.a!=null){pickStr=`${p.h}–${p.a}`;const a=res.group[id];if(a&&a.h!=null)pts=scoreLine(p.h,p.a,a.h,a.a);}}
-    else{const p=(pred.ko||{})[id];if(p&&p.a!=null&&p.b!=null){pickStr=`${p.a}–${p.b}`;const a=res.ko[id];if(a&&a.a!=null&&a.aTeam){if(p.aTeam===a.aTeam&&p.bTeam===a.bTeam)pts=scoreLine(p.a,p.b,a.a,a.b);else if(p.aTeam===a.bTeam&&p.bTeam===a.aTeam)pts=scoreLine(p.b,p.a,a.a,a.b);}}}
+    else{const p=(pred.ko||{})[id];if(p&&p.a!=null&&p.b!=null){pickStr=`${p.a}–${p.b}`;const a=res.ko[id];if(a&&a.a!=null&&a.aTeam){pts=scoreLine(p.a,p.b,a.a,a.b);}}}
     return {name:pl.name,pickStr,pts};
   }).sort((x,y)=>(y.pts||0)-(x.pts||0));
   let actLine="";
