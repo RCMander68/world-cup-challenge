@@ -1174,7 +1174,7 @@ function renderToday(host){
   if(!games.length){
     c.innerHTML=`<p class="lead" style="text-align:center;">No games on this day.</p>`;
   }else{
-    c.innerHTML=`<h2 style="font-size:18px;">${games.length} game${games.length===1?"":"s"} ${isToday?"today":"this day"}</h2><p class="lead">Kick-off times shown in UK time.</p>`;
+    c.innerHTML=`<h2 style="font-size:18px;">${games.length} game${games.length===1?"":"s"} ${isToday?"today":"this day"}</h2><p class="lead">Kick-off times shown in UK time. <span style="color:var(--gold);font-size:11px;">· tap a game for everyone's picks ✓v3</span></p>`;
     games.forEach(gm=>{
       const row=document.createElement("div");row.className="match";
       const mid=gm.time;
