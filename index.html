@@ -398,6 +398,17 @@ const TOURNAMENT_LOCK_MS = STAGE_LOCK_MS.groups;
 // ============================================================
 const KNOCKOUT_OPEN_MS = Date.parse("2026-06-20T04:00:00Z"); // 05:00 BST Sat 20 Jun
 function knockoutsOpen(){ return Date.now() >= KNOCKOUT_OPEN_MS; }
+// Friendly text for the knockout open time, derived from the constant so they never drift.
+function knockoutOpenText(){
+  const d=new Date(KNOCKOUT_OPEN_MS);
+  const datePart=d.toLocaleDateString("en-GB",{timeZone:"Europe/London",weekday:"long",day:"numeric",month:"long"});
+  let timePart=d.toLocaleTimeString("en-GB",{timeZone:"Europe/London",hour:"numeric",minute:"2-digit",hour12:true}).replace(" ","");
+  // determine BST vs GMT label
+  const jan=new Date(d.getFullYear(),0,1).getTimezoneOffset();
+  // Use Intl to get zone abbreviation
+  const tz=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/London",timeZoneName:"short"}).formatToParts(d).find(p=>p.type==="timeZoneName")?.value||"BST";
+  return `${datePart} at ${timePart} ${tz}`;
+}
 // Per-match kick-off time for a knockout match id (from KO_SCHED), in ms. null if unknown.
 function koMatchKickoffMs(mid){
   const s=KO_SCHED[mid]; if(!s) return null;
@@ -830,7 +841,7 @@ function renderPredict(host){
   // banner
   const st=stageStatus(ui.stage,res);
   const banner=document.createElement("div");
-  if(st==="waiting"){const prev=STAGES[STAGES.indexOf(ui.stage)-1];banner.className="banner wait";banner.innerHTML=`⏳ <b>${KO_NAMES[ui.stage]||"This round"} isn't open yet.</b> It unlocks once all ${STAGE_LABEL[prev]==="Groups"?"group":STAGE_LABEL[prev]} results are entered by ${esc(LG.scorerName)}. You'll see the real matchups here when it opens.`;}
+  if(st==="waiting"){banner.className="banner wait";banner.innerHTML=`⏳ <b>The knockout bracket opens ${knockoutOpenText()}.</b> From then you can predict every knockout round — Round of 32 through to the Final. Slots show "Winner of Group A" or "Winner of Match 73" and fill in with the real teams as results come in.`;}
   else if(st==="locked"){banner.className="banner lock";banner.innerHTML=`🔒 <b>Predictions for this round are locked</b> — the deadline has passed or results are in. Check the League tab to see how you're doing.`;}
   else{banner.className="banner open";banner.innerHTML=ui.stage==="groups"?`✅ <b>Group stage is open.</b> Predict every scoreline below.`:`✅ <b>${KO_NAMES[ui.stage]} is open!</b> The real matchups are shown — predict the scores.`;}
   host.appendChild(banner);
