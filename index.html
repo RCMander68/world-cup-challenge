@@ -1088,20 +1088,34 @@ function renderToday(host){
   host.appendChild(c);
 }
 
+// Take the top N, but include anyone tied with the Nth-place value (so "10 plus ties").
+function topWithTies(sortedArr, n, valueFn){
+  if(sortedArr.length<=n) return sortedArr;
+  const cutoff=valueFn(sortedArr[n-1]); // value at the Nth position
+  return sortedArr.filter((item,i)=> i<n || valueFn(item)===cutoff);
+}
 function renderFacts(host){
   const res=LG.results;
-  const tally=(res.scorers||[]).slice().filter(s=>s&&s.name).sort((a,b)=>(b.goals||0)-(a.goals||0)||a.name.localeCompare(b.name));
+  // TOP 10 SCORERS
+  const tally=topWithTies((res.scorers||[]).slice().filter(s=>s&&s.name).sort((a,b)=>(b.goals||0)-(a.goals||0)||a.name.localeCompare(b.name)),10,s=>s.goals||0);
   const tc=document.createElement("div");tc.className="card reveal";
-  let trows=tally.length?tally.map((s,i)=>`<div class="lbrow r${i+1}"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?` <small>${esc(s.team)}</small>`:""}</div><div class="sc">${s.goals||0}</div></div>`).join(""):`<p class="tiny">No scorer data imported yet.</p>`;
-  tc.innerHTML=`<h2>👟 Top Scorers</h2><p class="lead">Running tally across the tournament. For interest only — this doesn't affect league points.</p>${trows}`;
+  let trows=tally.length?tally.map((s,i)=>`<div class="lbrow r${i+1}"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div class="sc">${s.goals||0}</div></div>`).join(""):`<p class="tiny">No scorer data imported yet.</p>`;
+  tc.innerHTML=`<h2>👟 Top 10 Goalscorers</h2><p class="lead">The tournament's leading scorers by country. Info only — doesn't affect points.</p>${trows}`;
   host.appendChild(tc);
 
-  // Disciplinary (cards) tally
-  const cards=(res.cards||[]).slice().filter(s=>s&&s.name).sort((a,b)=>((b.red||0)*2+(b.yellow||0))-((a.red||0)*2+(a.yellow||0))||a.name.localeCompare(b.name));
-  const dc=document.createElement("div");dc.className="card reveal";
-  let drows=cards.length?cards.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?` <small>${esc(s.team)}</small>`:""}</div><div style="display:flex;gap:6px;align-items:center;"><span style="background:#f4c430;color:#06182f;border-radius:4px;padding:2px 7px;font-family:'Anton';font-size:13px;">${s.yellow||0}🟨</span><span style="background:#e23744;color:#fff;border-radius:4px;padding:2px 7px;font-family:'Anton';font-size:13px;">${s.red||0}🟥</span></div></div>`).join(""):`<p class="tiny">No card data imported yet.</p>`;
-  dc.innerHTML=`<h2>🟨 Cards Tally</h2><p class="lead">Yellow and red cards per player. Info only.</p>${drows}`;
-  host.appendChild(dc);
+  // TOP 10 YELLOW CARDS
+  const yellows=topWithTies((res.cards||[]).slice().filter(s=>s&&s.name&&(s.yellow||0)>0).sort((a,b)=>(b.yellow||0)-(a.yellow||0)||a.name.localeCompare(b.name)),10,s=>s.yellow||0);
+  const yc=document.createElement("div");yc.className="card reveal";
+  let yrows=yellows.length?yellows.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div><span style="background:#f4c430;color:#06182f;border-radius:5px;padding:3px 9px;font-family:'Anton';font-size:14px;">${s.yellow||0} 🟨</span></div></div>`).join(""):`<p class="tiny">No yellow-card data imported yet.</p>`;
+  yc.innerHTML=`<h2>🟨 Top 10 Yellow Cards</h2><p class="lead">Most-booked players by country.</p>${yrows}`;
+  host.appendChild(yc);
+
+  // TOP 10 RED CARDS
+  const reds=topWithTies((res.cards||[]).slice().filter(s=>s&&s.name&&(s.red||0)>0).sort((a,b)=>(b.red||0)-(a.red||0)||a.name.localeCompare(b.name)),10,s=>s.red||0);
+  const rc=document.createElement("div");rc.className="card reveal";
+  let rrows=reds.length?reds.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div><span style="background:#e23744;color:#fff;border-radius:5px;padding:3px 9px;font-family:'Anton';font-size:14px;">${s.red||0} 🟥</span></div></div>`).join(""):`<p class="tiny">No red cards yet.</p>`;
+  rc.innerHTML=`<h2>🟥 Top 10 Red Cards</h2><p class="lead">Players sent off, by country.</p>${rrows}`;
+  host.appendChild(rc);
 
   const fc=document.createElement("div");fc.className="card reveal";
   let html=`<h2>📋 Match Facts</h2><p class="lead">Results, goalscorers and cards as they come in.</p>`;
