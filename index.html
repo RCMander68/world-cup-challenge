@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -35,7 +38,8 @@
   .btn-row{display:flex;gap:9px;}
   .btn-row .btn{font-size:13.5px;padding:12px;}
 
-  .modetabs{display:flex;gap:6px;margin:14px 0 6px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:16px;padding:5px;}
+  .modetabs{display:flex;flex-direction:column;gap:6px;margin:14px 0 6px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:16px;padding:5px;}
+  .moderow{display:flex;gap:6px;}
   .modetab{flex:1;text-align:center;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.03em;text-transform:uppercase;font-size:11.5px;padding:10px 4px;border-radius:11px;color:#b9c6dc;cursor:pointer;transition:.15s;}
   .modetab.active{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--ink);font-weight:800;}
 
@@ -48,6 +52,12 @@
   .chip .lk{margin-left:5px;}
 
   .banner{border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.5;margin:4px 0 10px;}
+  .ko-welcome{position:relative;background:rgba(0,196,106,.12);border:1px solid rgba(0,196,106,.4);border-radius:14px;padding:13px 34px 13px 15px;margin:0 0 12px;}
+  .ko-welcome-h{font-weight:800;color:#fff;font-size:14.5px;margin-bottom:4px;}
+  .ko-welcome-b{font-size:12.5px;line-height:1.5;color:#cfeede;}
+  .ko-welcome-b b{color:#fff;font-weight:700;}
+  .ko-welcome-x{position:absolute;top:9px;right:11px;color:#8fcfae;font-size:14px;cursor:pointer;line-height:1;padding:3px;}
+  .ko-welcome-x:hover{color:#fff;}
   .banner.open{background:rgba(0,196,106,.12);border:1px solid rgba(0,196,106,.35);color:#a9f0cf;}
   .banner.wait{background:rgba(244,196,48,.1);border:1px solid rgba(244,196,48,.3);color:#ffe7a6;}
   .banner.lock{background:rgba(226,55,68,.1);border:1px solid rgba(226,55,68,.3);color:#f7b7bd;}
@@ -689,11 +699,19 @@ function render(){
   chip.innerHTML=`<span class="leaguechip" id="leagueChip" style="cursor:pointer;">🏆 <b>${esc(LG.name)}</b> · code <b>${esc(local.leagueId)}</b>${memberships.length>1?' <span style="color:var(--gold);font-weight:800;">▾</span>':''}</span>`;
   const chipEl=document.getElementById("leagueChip");
   if(chipEl)chipEl.onclick=()=>openLeaguePicker();
-  // mode tabs
-  const tabs=[["predict","🔮 Predict"],["today","📅 Today"],["standings","🏆 Tables"],["leaderboard","📊 League"],["facts","📋 Facts"],["info","ℹ️ Help"]];
-  if(local.isScorer)tabs.splice(1,0,["results","✍️ Results"]);
-  let html=`<div class="modetabs">`+tabs.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div><div id="modeBody"></div>`;
+  // mode tabs — arranged in two rows.
+  // Row 1: Predict, League, Results, Today, Tables
+  // Row 2: Match Facts, Top Scorer, Yellow Cards, Red Cards, Help
+  const row1=[["predict","🔮 Predict"],["leaderboard","📊 League"]];
+  if(local.isScorer)row1.push(["results","✍️ Results"]);
+  row1.push(["today","📅 Today"],["standings","🏆 Tables"]);
+  const row2=[["facts","📋 Facts"],["scorers","👟 Scorers"],["yellows","🟨 Yellows"],["reds","🟥 Reds"],["info","ℹ️ Help"]];
+  // App-wide knockout welcome — a one-time pop-up screen shown on load once knockouts open,
+  // so players can't miss that R32 predicting is live and games close one-by-one.
+  const rowHtml=row=>`<div class="moderow">`+row.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div>`;
+  let html=`<div class="modetabs">`+rowHtml(row1)+rowHtml(row2)+`</div><div id="modeBody"></div>`;
   app.innerHTML=html;
+  maybeShowKnockoutWelcome();
   app.querySelectorAll(".modetab").forEach(t=>t.onclick=()=>{ui.mode=t.dataset.mode;render();window.scrollTo({top:0,behavior:"smooth"});});
   const body=document.getElementById("modeBody");
   if(ui.mode==="predict")renderPredict(body);
@@ -702,6 +720,9 @@ function render(){
   else if(ui.mode==="leaderboard")renderLeaderboard(body);
   else if(ui.mode==="today")renderToday(body);
   else if(ui.mode==="facts")renderFacts(body);
+  else if(ui.mode==="scorers")renderScorers(body);
+  else if(ui.mode==="yellows")renderYellows(body);
+  else if(ui.mode==="reds")renderReds(body);
   else if(ui.mode==="info")renderInfo(body);
 }
 
@@ -843,7 +864,15 @@ function renderPredict(host){
   const banner=document.createElement("div");
   if(st==="waiting"){banner.className="banner wait";banner.innerHTML=`⏳ <b>The knockout bracket opens ${knockoutOpenText()}.</b> From then you can predict every knockout round — Round of 32 through to the Final. Slots show "Winner of Group A" or "Winner of Match 73" and fill in with the real teams as results come in.`;}
   else if(st==="locked"){banner.className="banner lock";banner.innerHTML=`🔒 <b>Predictions for this round are locked</b> — the deadline has passed or results are in. Check the League tab to see how you're doing.`;}
-  else{banner.className="banner open";banner.innerHTML=ui.stage==="groups"?`✅ <b>Group stage is open.</b> Predict every scoreline below.`:`✅ <b>${KO_NAMES[ui.stage]} is open!</b> The real matchups are shown — predict the scores.`;}
+  else{
+    banner.className="banner open";
+    if(ui.stage==="groups"){
+      banner.innerHTML=`✅ <b>Group stage is open.</b> Predict every scoreline below.`;
+    } else {
+      // Knockouts are now open. Welcome message + how the per-match locking works.
+      banner.innerHTML=`🔮 <b>Knockout predictions are open!</b> You can now predict the ${KO_NAMES[ui.stage]} — and every other knockout round, all the way to the Final. Each game <b>locks at its own kick-off</b>, so they close one by one (not all at once) — get your picks in before each match starts. Slots still showing "Winner of Group A" or "Winner of Match 73" will fill in with the real teams as results come in.`;
+    }
+  }
   host.appendChild(banner);
 
   if(st==="waiting")return;
@@ -1242,29 +1271,38 @@ function topWithTies(sortedArr, n, valueFn){
   const cutoff=valueFn(sortedArr[n-1]); // value at the Nth position
   return sortedArr.filter((item,i)=> i<n || valueFn(item)===cutoff);
 }
-function renderFacts(host){
+// TOP SCORER tab
+function renderScorers(host){
   const res=LG.results;
-  // TOP 10 SCORERS
   const tally=topWithTies((res.scorers||[]).slice().filter(s=>s&&s.name).sort((a,b)=>(b.goals||0)-(a.goals||0)||a.name.localeCompare(b.name)),10,s=>s.goals||0);
   const tc=document.createElement("div");tc.className="card reveal";
   let trows=tally.length?tally.map((s,i)=>`<div class="lbrow r${i+1}"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div class="sc">${s.goals||0}</div></div>`).join(""):`<p class="tiny">No scorer data imported yet.</p>`;
   tc.innerHTML=`<h2>👟 Top 10 Goalscorers</h2><p class="lead">The tournament's leading scorers by country. Info only — doesn't affect points.</p>${trows}`;
   host.appendChild(tc);
+}
 
-  // TOP 10 YELLOW CARDS
+// YELLOW CARDS tab
+function renderYellows(host){
+  const res=LG.results;
   const yellows=topWithTies((res.cards||[]).slice().filter(s=>s&&s.name&&(s.yellow||0)>0).sort((a,b)=>(b.yellow||0)-(a.yellow||0)||a.name.localeCompare(b.name)),10,s=>s.yellow||0);
   const yc=document.createElement("div");yc.className="card reveal";
   let yrows=yellows.length?yellows.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div><span style="background:#f4c430;color:#06182f;border-radius:5px;padding:3px 9px;font-family:'Anton';font-size:14px;">${s.yellow||0} 🟨</span></div></div>`).join(""):`<p class="tiny">No yellow-card data imported yet.</p>`;
   yc.innerHTML=`<h2>🟨 Top 10 Yellow Cards</h2><p class="lead">Most-booked players by country.</p>${yrows}`;
   host.appendChild(yc);
+}
 
-  // TOP 10 RED CARDS
+// RED CARDS tab
+function renderReds(host){
+  const res=LG.results;
   const reds=topWithTies((res.cards||[]).slice().filter(s=>s&&s.name&&(s.red||0)>0).sort((a,b)=>(b.red||0)-(a.red||0)||a.name.localeCompare(b.name)),10,s=>s.red||0);
   const rc=document.createElement("div");rc.className="card reveal";
   let rrows=reds.length?reds.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div><span style="background:#e23744;color:#fff;border-radius:5px;padding:3px 9px;font-family:'Anton';font-size:14px;">${s.red||0} 🟥</span></div></div>`).join(""):`<p class="tiny">No red cards yet.</p>`;
   rc.innerHTML=`<h2>🟥 Top 10 Red Cards</h2><p class="lead">Players sent off, by country.</p>${rrows}`;
   host.appendChild(rc);
+}
 
+function renderFacts(host){
+  const res=LG.results;
   const fc=document.createElement("div");fc.className="card reveal";
   let html=`<h2>📋 Match Facts</h2><p class="lead">Results, goalscorers and cards as they come in.</p>`;
   function factLines(f){
@@ -1578,6 +1616,32 @@ function unbusy(){const o=document.getElementById("ov");if(o)o.remove();}
 
 document.getElementById("syncBtn").onclick=()=>{toast("Refreshed");render();};
 document.getElementById("leaveBtn").onclick=()=>openSettings();
+
+// One-time knockout welcome pop-up. Shows once per device when knockouts open.
+const KO_WELCOME_KEY="wc26_ko_welcome_seen_v1";
+function maybeShowKnockoutWelcome(){
+  if(!knockoutsOpen())return;
+  let seen=false; try{seen=localStorage.getItem(KO_WELCOME_KEY)==="1";}catch(e){}
+  if(seen||ui._koWelcomeShownThisLoad)return;
+  ui._koWelcomeShownThisLoad=true; // don't re-pop on every render within one load
+  let o=document.getElementById("ov");
+  if(!o){o=document.createElement("div");o.id="ov";o.className="overlay";document.body.appendChild(o);}
+  o.style.display="flex";
+  o.innerHTML=`<div class="card" style="max-width:430px;width:92%;text-align:center;">
+    <div style="font-size:40px;line-height:1;margin-bottom:6px;">🔮</div>
+    <h2 style="margin-bottom:8px;">Knockout predictions are open!</h2>
+    <p class="lead" style="text-align:left;">You can now predict the <b style="color:#fff;">Round of 32 all the way to the Final</b>.</p>
+    <p class="lead" style="text-align:left;">Each game <b style="color:#fff;">locks at its own kick-off</b>, so they close one by one — not all at once. Get your picks in before each match starts.</p>
+    <p class="lead" style="text-align:left;">Slots showing "Winner of Group A" or "Winner of Match 73" will fill in with the real teams as results come in.</p>
+    <button class="btn btn-gold" id="koWelcomeGotIt" style="margin-top:14px;">Got it — let's predict 🔮</button>
+  </div>`;
+  const btn=document.getElementById("koWelcomeGotIt");
+  if(btn)btn.onclick=()=>{
+    try{localStorage.setItem(KO_WELCOME_KEY,"1");}catch(e){}
+    o.style.display="none";o.innerHTML="";
+    ui.mode="predict";ui.stage="r32";render();   // take them straight to the open R32 predictions
+  };
+}
 
 async function openLeaguePicker(){
   busy("");const o=document.getElementById("ov");
