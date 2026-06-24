@@ -308,7 +308,15 @@ function resolveR32(res){
   const tables={};GL.forEach(g=>tables[g]=computeGroupTable(g,res));const complete=allGroupsComplete(res);
   let slotFill=null;
   if(complete){const thirds=thirdPlaceRanking(res).slice(0,8).map(t=>t.group);const key=thirds.slice().sort().join("");const packed=WC_DATA.combos[key];if(packed){slotFill={};WC_DATA.slotOrder.forEach((s,i)=>slotFill[s]=packed[i]);}}
-  function tok(t){if(!complete)return null;if(t.startsWith("W_"))return tables[t[2]][0].team;if(t.startsWith("RU_"))return tables[t[3]][1].team;if(t.startsWith("T_")){if(!slotFill)return null;const slot=Object.keys(WC_DATA.slotmap).find(s=>WC_DATA.slotmap[s]===t);return slotFill[slot]?tables[slotFill[slot]][2].team:null;}return null;}
+  // W_/RU_ slots resolve as soon as THEIR OWN group is mathematically decided (group-by-group),
+  // so a match shows real team names without waiting for the whole group stage to finish.
+  // T_ (best-third) slots still need all groups complete, since third-place seeding is cross-group.
+  function tok(t){
+    if(t.startsWith("W_")){const g=t[2];return groupComplete(g,res)?tables[g][0].team:null;}
+    if(t.startsWith("RU_")){const g=t[3];return groupComplete(g,res)?tables[g][1].team:null;}
+    if(t.startsWith("T_")){if(!complete||!slotFill)return null;const slot=Object.keys(WC_DATA.slotmap).find(s=>WC_DATA.slotmap[s]===t);return slotFill[slot]?tables[slotFill[slot]][2].team:null;}
+    return null;
+  }
   const out={};R32_MATCHES.forEach(mid=>{const[x,y]=WC_DATA.r32[mid];out[mid]={aTeam:tok(x),bTeam:tok(y),aTok:x,bTok:y};});
   return {out,complete};
 }
@@ -699,16 +707,17 @@ function render(){
   chip.innerHTML=`<span class="leaguechip" id="leagueChip" style="cursor:pointer;">🏆 <b>${esc(LG.name)}</b> · code <b>${esc(local.leagueId)}</b>${memberships.length>1?' <span style="color:var(--gold);font-weight:800;">▾</span>':''}</span>`;
   const chipEl=document.getElementById("leagueChip");
   if(chipEl)chipEl.onclick=()=>openLeaguePicker();
-  // mode tabs — arranged in two rows.
-  // Row 1: Predict, League, Results, Today, Tables
+  // mode tabs
+  // mode tabs — two rows.
+  // Row 1: Predict, League, Results (scorer only), Today, Tables
   // Row 2: Match Facts, Top Scorer, Yellow Cards, Red Cards, Help
   const row1=[["predict","🔮 Predict"],["leaderboard","📊 League"]];
   if(local.isScorer)row1.push(["results","✍️ Results"]);
   row1.push(["today","📅 Today"],["standings","🏆 Tables"]);
   const row2=[["facts","📋 Facts"],["scorers","👟 Scorers"],["yellows","🟨 Yellows"],["reds","🟥 Reds"],["info","ℹ️ Help"]];
+  const rowHtml=row=>`<div class="moderow">`+row.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div>`;
   // App-wide knockout welcome — a one-time pop-up screen shown on load once knockouts open,
   // so players can't miss that R32 predicting is live and games close one-by-one.
-  const rowHtml=row=>`<div class="moderow">`+row.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div>`;
   let html=`<div class="modetabs">`+rowHtml(row1)+rowHtml(row2)+`</div><div id="modeBody"></div>`;
   app.innerHTML=html;
   maybeShowKnockoutWelcome();
