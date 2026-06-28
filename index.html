@@ -38,8 +38,7 @@
   .btn-row{display:flex;gap:9px;}
   .btn-row .btn{font-size:13.5px;padding:12px;}
 
-  .modetabs{display:flex;flex-direction:column;gap:6px;margin:14px 0 6px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:16px;padding:5px;}
-  .moderow{display:flex;gap:6px;}
+  .modetabs{display:flex;gap:6px;margin:14px 0 6px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:16px;padding:5px;}
   .modetab{flex:1;text-align:center;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.03em;text-transform:uppercase;font-size:11.5px;padding:10px 4px;border-radius:11px;color:#b9c6dc;cursor:pointer;transition:.15s;}
   .modetab.active{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--ink);font-weight:800;}
 
@@ -302,21 +301,17 @@ function thirdPlaceRanking(res){const t=GL.map(g=>{const r=computeGroupTable(g,r
 /* ============================================================
    AUTO-BRACKET ENGINE
    ============================================================ */
-function winnerOf(mid,res){const s=res.ko[mid];if(!s||s.a==null||s.b==null)return null;if(+s.a>+s.b)return s.aTeam;if(+s.b>+s.a)return s.bTeam;if(s.pa!=null&&s.pb!=null&&+s.pa!==+s.pb)return(+s.pa>+s.pb)?s.aTeam:s.bTeam;return null;}
+function winnerOf(mid,res){const s=res.ko[mid];if(!s||s.a==null||s.b==null)return null;
+  if(+s.a>+s.b)return s.aTeam;if(+s.b>+s.a)return s.bTeam;                       // decided in 90 mins
+  if(s.ea!=null&&s.eb!=null){if(+s.ea>+s.eb)return s.aTeam;if(+s.eb>+s.ea)return s.bTeam;} // decided in extra time
+  if(s.pa!=null&&s.pb!=null&&+s.pa!==+s.pb)return(+s.pa>+s.pb)?s.aTeam:s.bTeam;  // decided on penalties
+  return null;}
 function loserOf(mid,res){const s=res.ko[mid];if(!s||s.a==null||s.b==null)return null;const w=winnerOf(mid,res);if(!w)return null;return w===s.aTeam?s.bTeam:s.aTeam;}
 function resolveR32(res){
   const tables={};GL.forEach(g=>tables[g]=computeGroupTable(g,res));const complete=allGroupsComplete(res);
   let slotFill=null;
   if(complete){const thirds=thirdPlaceRanking(res).slice(0,8).map(t=>t.group);const key=thirds.slice().sort().join("");const packed=WC_DATA.combos[key];if(packed){slotFill={};WC_DATA.slotOrder.forEach((s,i)=>slotFill[s]=packed[i]);}}
-  // W_/RU_ slots resolve as soon as THEIR OWN group is mathematically decided (group-by-group),
-  // so a match shows real team names without waiting for the whole group stage to finish.
-  // T_ (best-third) slots still need all groups complete, since third-place seeding is cross-group.
-  function tok(t){
-    if(t.startsWith("W_")){const g=t[2];return groupComplete(g,res)?tables[g][0].team:null;}
-    if(t.startsWith("RU_")){const g=t[3];return groupComplete(g,res)?tables[g][1].team:null;}
-    if(t.startsWith("T_")){if(!complete||!slotFill)return null;const slot=Object.keys(WC_DATA.slotmap).find(s=>WC_DATA.slotmap[s]===t);return slotFill[slot]?tables[slotFill[slot]][2].team:null;}
-    return null;
-  }
+  function tok(t){if(!complete)return null;if(t.startsWith("W_"))return tables[t[2]][0].team;if(t.startsWith("RU_"))return tables[t[3]][1].team;if(t.startsWith("T_")){if(!slotFill)return null;const slot=Object.keys(WC_DATA.slotmap).find(s=>WC_DATA.slotmap[s]===t);return slotFill[slot]?tables[slotFill[slot]][2].team:null;}return null;}
   const out={};R32_MATCHES.forEach(mid=>{const[x,y]=WC_DATA.r32[mid];out[mid]={aTeam:tok(x),bTeam:tok(y),aTok:x,bTok:y};});
   return {out,complete};
 }
@@ -708,17 +703,11 @@ function render(){
   const chipEl=document.getElementById("leagueChip");
   if(chipEl)chipEl.onclick=()=>openLeaguePicker();
   // mode tabs
-  // mode tabs — two rows.
-  // Row 1: Predict, League, Results (scorer only), Today, Tables
-  // Row 2: Match Facts, Top Scorer, Yellow Cards, Red Cards, Help
-  const row1=[["predict","🔮 Predict"],["leaderboard","📊 League"]];
-  if(local.isScorer)row1.push(["results","✍️ Results"]);
-  row1.push(["today","📅 Today"],["standings","🏆 Tables"]);
-  const row2=[["facts","📋 Facts"],["scorers","👟 Scorers"],["yellows","🟨 Yellows"],["reds","🟥 Reds"],["info","ℹ️ Help"]];
-  const rowHtml=row=>`<div class="moderow">`+row.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div>`;
+  const tabs=[["predict","🔮 Predict"],["today","📅 Today"],["standings","🏆 Tables"],["leaderboard","📊 League"],["facts","📋 Facts"],["info","ℹ️ Help"]];
+  if(local.isScorer)tabs.splice(1,0,["results","✍️ Results"]);
   // App-wide knockout welcome — a one-time pop-up screen shown on load once knockouts open,
   // so players can't miss that R32 predicting is live and games close one-by-one.
-  let html=`<div class="modetabs">`+rowHtml(row1)+rowHtml(row2)+`</div><div id="modeBody"></div>`;
+  let html=`<div class="modetabs">`+tabs.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div><div id="modeBody"></div>`;
   app.innerHTML=html;
   maybeShowKnockoutWelcome();
   app.querySelectorAll(".modetab").forEach(t=>t.onclick=()=>{ui.mode=t.dataset.mode;render();window.scrollTo({top:0,behavior:"smooth"});});
@@ -729,9 +718,6 @@ function render(){
   else if(ui.mode==="leaderboard")renderLeaderboard(body);
   else if(ui.mode==="today")renderToday(body);
   else if(ui.mode==="facts")renderFacts(body);
-  else if(ui.mode==="scorers")renderScorers(body);
-  else if(ui.mode==="yellows")renderYellows(body);
-  else if(ui.mode==="reds")renderReds(body);
   else if(ui.mode==="info")renderInfo(body);
 }
 
@@ -879,7 +865,7 @@ function renderPredict(host){
       banner.innerHTML=`✅ <b>Group stage is open.</b> Predict every scoreline below.`;
     } else {
       // Knockouts are now open. Welcome message + how the per-match locking works.
-      banner.innerHTML=`🔮 <b>Knockout predictions are open!</b> You can now predict the ${KO_NAMES[ui.stage]} — and every other knockout round, all the way to the Final. Each game <b>locks at its own kick-off</b>, so they close one by one (not all at once) — get your picks in before each match starts. Slots still showing "Winner of Group A" or "Winner of Match 73" will fill in with the real teams as results come in.`;
+      banner.innerHTML=`🎉 <b>Knockout predictions are open!</b> You can now predict the ${KO_NAMES[ui.stage]} — and every other knockout round, all the way to the Final. Each game <b>locks at its own kick-off</b>, so they close one by one (not all at once) — get your picks in before each match starts. Slots still showing "Winner of Group A" or "Winner of Match 73" will fill in with the real teams as results come in.`;
     }
   }
   host.appendChild(banner);
@@ -925,15 +911,24 @@ function groupActualStrip(id,m){
   const ptHtml=pts==null?`<span class="ptpill zero">no pick</span>`:`<span class="${ptPillClass(pts)}">${pts} pt${pts===1?"":"s"}</span>`;
   return `<div class="actbar"><span class="act">Actual <b>${a.h}–${a.a}</b></span>${ptHtml}</div>`;
 }
+// Full-detail suffix for a knockout result: "(a.e.t. 2–1)" or "(a.e.t. 1–1, pens 4–3)".
+function koDetailSuffix(a){
+  if(!a)return "";
+  const hasET=(a.ea!=null&&a.eb!=null), hasPen=(a.pa!=null&&a.pb!=null);
+  if(hasET&&hasPen)return ` (a.e.t. ${a.ea}–${a.eb}, pens ${a.pa}–${a.pb})`;
+  if(hasET)return ` (a.e.t. ${a.ea}–${a.eb})`;
+  if(hasPen)return ` (pens ${a.pa}–${a.pb})`;   // safety: pens without ET recorded
+  return "";
+}
 function koActualStrip(mid){
   const a=LG.results.ko[mid];
   if(!a||a.a==null||a.b==null||!a.aTeam||!a.bTeam)return "";
   const p=myPred().ko[mid];
   let pts=null;
-  if(p&&p.a!=null&&p.b!=null){pts=scoreLine(p.a,p.b,a.a,a.b);} // position-based
-  const pen=(a.pa!=null&&a.pb!=null)?` <span style="color:#8aa0c2">(pens ${a.pa}–${a.pb})</span>`:"";
+  if(p&&p.a!=null&&p.b!=null){pts=scoreLine(p.a,p.b,a.a,a.b);} // position-based, on the 90-min score
+  const detail=koDetailSuffix(a);
   const ptHtml=pts==null?`<span class="ptpill zero">no pick</span>`:`<span class="${ptPillClass(pts)}">${pts} pt${pts===1?"":"s"}</span>`;
-  return `<div class="actbar"><span class="act">Actual <b>${a.aTeam} ${a.a}–${a.b} ${a.bTeam}</b>${pen}</span>${ptHtml}</div>`;
+  return `<div class="actbar"><span class="act">Actual <b>${a.aTeam} ${a.a}–${a.b} ${a.bTeam}</b><span style="color:#8aa0c2">${detail}</span></span>${ptHtml}</div>`;
 }
 
 function renderPredictKO(host,round,res,st){
@@ -1096,6 +1091,7 @@ function renderResultKO(host,round,res){
         <div class="vs"><input class="score res" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="a" value="${sv.a??""}" ${aT?'':'disabled'}><span class="dash">–</span><input class="score res" inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="b" value="${sv.b??""}" ${bT?'':'disabled'}></div>
         <div class="ko-side ${bT?'':'tbd'}"><span class="flag">${bT?(FLAGS[bT]||"⚽"):"❓"}</span><span class="tn">${bT||"TBD"}</span></div>
       </div>
+      <div class="penwrap" id="et-${mid}" style="${needET(sv)?'':'display:none'}"><span>AET</span><input inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="ea" value="${sv.ea??""}"><span>–</span><input inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="eb" value="${sv.eb??""}"></div>
       <div class="penwrap" id="pen-${mid}" style="${needPens(sv)?'':'display:none'}"><span>Pens</span><input inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="pa" value="${sv.pa??""}"><span>–</span><input inputmode="numeric" maxlength="2" data-mid="${mid}" data-f="pb" value="${sv.pb??""}"></div>
       <div class="winner-pill" id="wpil-${mid}"></div>`;
     host.appendChild(box);
@@ -1106,11 +1102,15 @@ function renderResultKO(host,round,res){
     const t=e.target,mid=t.dataset.mid,f=t.dataset.f;t.value=t.value.replace(/[^0-9]/g,"").slice(0,2);
     if(!LG.results.ko[mid])LG.results.ko[mid]={};const o=LG.results.ko[mid];o[f]=t.value===""?null:+t.value;
     const r=resolveStage(round,res)[mid];if(r){o.aTeam=r.aTeam;o.bTeam=r.bTeam;}
+    const et=document.getElementById("et-"+mid);if(et)et.style.display=needET(o)?"flex":"none";
     const pen=document.getElementById("pen-"+mid);if(pen)pen.style.display=needPens(o)?"flex":"none";
     updWinPill(mid);saveResultsSoon();
   }));
 }
-function needPens(sv){return sv&&sv.a!=null&&sv.b!=null&&+sv.a===+sv.b;}
+// Extra time is needed when the 90-minute score is level.
+function needET(sv){return sv&&sv.a!=null&&sv.b!=null&&+sv.a===+sv.b;}
+// Penalties are needed when 90-min was level AND the extra-time score is also level.
+function needPens(sv){return needET(sv)&&sv.ea!=null&&sv.eb!=null&&+sv.ea===+sv.eb;}
 function updWinPill(mid){const el=document.getElementById("wpil-"+mid);if(!el)return;const w=winnerOf(mid,LG.results);el.textContent=w?`✅ ${w} advance`:"";}
 
 /* ============================================================
@@ -1280,38 +1280,29 @@ function topWithTies(sortedArr, n, valueFn){
   const cutoff=valueFn(sortedArr[n-1]); // value at the Nth position
   return sortedArr.filter((item,i)=> i<n || valueFn(item)===cutoff);
 }
-// TOP SCORER tab
-function renderScorers(host){
+function renderFacts(host){
   const res=LG.results;
+  // TOP 10 SCORERS
   const tally=topWithTies((res.scorers||[]).slice().filter(s=>s&&s.name).sort((a,b)=>(b.goals||0)-(a.goals||0)||a.name.localeCompare(b.name)),10,s=>s.goals||0);
   const tc=document.createElement("div");tc.className="card reveal";
   let trows=tally.length?tally.map((s,i)=>`<div class="lbrow r${i+1}"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div class="sc">${s.goals||0}</div></div>`).join(""):`<p class="tiny">No scorer data imported yet.</p>`;
   tc.innerHTML=`<h2>👟 Top 10 Goalscorers</h2><p class="lead">The tournament's leading scorers by country. Info only — doesn't affect points.</p>${trows}`;
   host.appendChild(tc);
-}
 
-// YELLOW CARDS tab
-function renderYellows(host){
-  const res=LG.results;
+  // TOP 10 YELLOW CARDS
   const yellows=topWithTies((res.cards||[]).slice().filter(s=>s&&s.name&&(s.yellow||0)>0).sort((a,b)=>(b.yellow||0)-(a.yellow||0)||a.name.localeCompare(b.name)),10,s=>s.yellow||0);
   const yc=document.createElement("div");yc.className="card reveal";
   let yrows=yellows.length?yellows.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div><span style="background:#f4c430;color:#06182f;border-radius:5px;padding:3px 9px;font-family:'Anton';font-size:14px;">${s.yellow||0} 🟨</span></div></div>`).join(""):`<p class="tiny">No yellow-card data imported yet.</p>`;
   yc.innerHTML=`<h2>🟨 Top 10 Yellow Cards</h2><p class="lead">Most-booked players by country.</p>${yrows}`;
   host.appendChild(yc);
-}
 
-// RED CARDS tab
-function renderReds(host){
-  const res=LG.results;
+  // TOP 10 RED CARDS
   const reds=topWithTies((res.cards||[]).slice().filter(s=>s&&s.name&&(s.red||0)>0).sort((a,b)=>(b.red||0)-(a.red||0)||a.name.localeCompare(b.name)),10,s=>s.red||0);
   const rc=document.createElement("div");rc.className="card reveal";
   let rrows=reds.length?reds.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div><span style="background:#e23744;color:#fff;border-radius:5px;padding:3px 9px;font-family:'Anton';font-size:14px;">${s.red||0} 🟥</span></div></div>`).join(""):`<p class="tiny">No red cards yet.</p>`;
   rc.innerHTML=`<h2>🟥 Top 10 Red Cards</h2><p class="lead">Players sent off, by country.</p>${rrows}`;
   host.appendChild(rc);
-}
 
-function renderFacts(host){
-  const res=LG.results;
   const fc=document.createElement("div");fc.className="card reveal";
   let html=`<h2>📋 Match Facts</h2><p class="lead">Results, goalscorers and cards as they come in.</p>`;
   function factLines(f){
@@ -1338,7 +1329,7 @@ function renderFacts(host){
     KO_LIST[rk].forEach(mid=>{
       const a=res.ko[mid];if(!a||a.a==null||a.b==null||!a.aTeam||!a.bTeam)return;
       const f=(res.facts&&res.facts["KO"+mid])||{};
-      const pen=(a.pa!=null&&a.pb!=null)?` (pens ${a.pa}–${a.pb})`:"";
+      const pen=koDetailSuffix(a);
       rows+=`<div class="summary-line" style="flex-direction:column;align-items:stretch;gap:2px;"><div style="display:flex;justify-content:space-between;"><span>${FLAGS[a.aTeam]||""} ${short(a.aTeam)} v ${short(a.bTeam)} ${FLAGS[a.bTeam]||""}</span><b>${a.a}–${a.b}${pen}</b></div>${factLines(f)}</div>`;
     });
     if(rows)html+=`<div style="margin-top:10px;"><div class="group-tag" style="display:inline-block;margin-bottom:4px;">${KO_NAMES[rk]}</div>${rows}</div>`;
@@ -1637,7 +1628,7 @@ function maybeShowKnockoutWelcome(){
   if(!o){o=document.createElement("div");o.id="ov";o.className="overlay";document.body.appendChild(o);}
   o.style.display="flex";
   o.innerHTML=`<div class="card" style="max-width:430px;width:92%;text-align:center;">
-    <div style="font-size:40px;line-height:1;margin-bottom:6px;">🔮</div>
+    <div style="font-size:40px;line-height:1;margin-bottom:6px;">🎉</div>
     <h2 style="margin-bottom:8px;">Knockout predictions are open!</h2>
     <p class="lead" style="text-align:left;">You can now predict the <b style="color:#fff;">Round of 32 all the way to the Final</b>.</p>
     <p class="lead" style="text-align:left;">Each game <b style="color:#fff;">locks at its own kick-off</b>, so they close one by one — not all at once. Get your picks in before each match starts.</p>
