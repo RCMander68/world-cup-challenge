@@ -38,7 +38,8 @@
   .btn-row{display:flex;gap:9px;}
   .btn-row .btn{font-size:13.5px;padding:12px;}
 
-  .modetabs{display:flex;gap:6px;margin:14px 0 6px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:16px;padding:5px;}
+  .modetabs{display:flex;flex-direction:column;gap:6px;margin:14px 0 6px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:16px;padding:5px;}
+  .modetab-row{display:flex;gap:6px;}
   .modetab{flex:1;text-align:center;font-family:'Archivo Narrow';font-weight:700;letter-spacing:.03em;text-transform:uppercase;font-size:11.5px;padding:10px 4px;border-radius:11px;color:#b9c6dc;cursor:pointer;transition:.15s;}
   .modetab.active{background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--ink);font-weight:800;}
 
@@ -702,12 +703,15 @@ function render(){
   chip.innerHTML=`<span class="leaguechip" id="leagueChip" style="cursor:pointer;">🏆 <b>${esc(LG.name)}</b> · code <b>${esc(local.leagueId)}</b>${memberships.length>1?' <span style="color:var(--gold);font-weight:800;">▾</span>':''}</span>`;
   const chipEl=document.getElementById("leagueChip");
   if(chipEl)chipEl.onclick=()=>openLeaguePicker();
-  // mode tabs
-  const tabs=[["predict","🔮 Predict"],["today","📅 Today"],["standings","🏆 Tables"],["leaderboard","📊 League"],["facts","📋 Facts"],["info","ℹ️ Help"]];
-  if(local.isScorer)tabs.splice(1,0,["results","✍️ Results"]);
+  // mode tabs — two rows of five pills each
+  // Row 1: predict / league / results / today / tables
+  // Row 2: facts / scorers / yellows / reds / help
+  const row1=[["predict","🔮 Predict"],["leaderboard","📊 League"],["results","🥇 Results"],["today","📅 Today"],["standings","🏆 Tables"]];
+  const row2=[["facts","📋 Facts"],["scorers","👟 Scorers"],["yellows","🟨 Yellows"],["reds","🟥 Reds"],["info","ℹ️ Help"]];
   // App-wide knockout welcome — a one-time pop-up screen shown on load once knockouts open,
   // so players can't miss that R32 predicting is live and games close one-by-one.
-  let html=`<div class="modetabs">`+tabs.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div><div id="modeBody"></div>`;
+  const rowHtml=row=>`<div class="modetab-row">`+row.map(([k,l])=>`<div class="modetab ${ui.mode===k?'active':''}" data-mode="${k}">${l}</div>`).join("")+`</div>`;
+  let html=`<div class="modetabs">`+rowHtml(row1)+rowHtml(row2)+`</div><div id="modeBody"></div>`;
   app.innerHTML=html;
   maybeShowKnockoutWelcome();
   app.querySelectorAll(".modetab").forEach(t=>t.onclick=()=>{ui.mode=t.dataset.mode;render();window.scrollTo({top:0,behavior:"smooth"});});
@@ -718,6 +722,9 @@ function render(){
   else if(ui.mode==="leaderboard")renderLeaderboard(body);
   else if(ui.mode==="today")renderToday(body);
   else if(ui.mode==="facts")renderFacts(body);
+  else if(ui.mode==="scorers")renderScorers(body);
+  else if(ui.mode==="yellows")renderYellows(body);
+  else if(ui.mode==="reds")renderReds(body);
   else if(ui.mode==="info")renderInfo(body);
 }
 
@@ -1280,29 +1287,39 @@ function topWithTies(sortedArr, n, valueFn){
   const cutoff=valueFn(sortedArr[n-1]); // value at the Nth position
   return sortedArr.filter((item,i)=> i<n || valueFn(item)===cutoff);
 }
-function renderFacts(host){
+// 👟 SCORERS TAB — Top 10 goalscorers only
+function renderScorers(host){
   const res=LG.results;
-  // TOP 10 SCORERS
   const tally=topWithTies((res.scorers||[]).slice().filter(s=>s&&s.name).sort((a,b)=>(b.goals||0)-(a.goals||0)||a.name.localeCompare(b.name)),10,s=>s.goals||0);
   const tc=document.createElement("div");tc.className="card reveal";
   let trows=tally.length?tally.map((s,i)=>`<div class="lbrow r${i+1}"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div class="sc">${s.goals||0}</div></div>`).join(""):`<p class="tiny">No scorer data imported yet.</p>`;
   tc.innerHTML=`<h2>👟 Top 10 Goalscorers</h2><p class="lead">The tournament's leading scorers by country. Info only — doesn't affect points.</p>${trows}`;
   host.appendChild(tc);
+}
 
-  // TOP 10 YELLOW CARDS
+// 🟨 YELLOWS TAB — Top 10 yellow cards only
+function renderYellows(host){
+  const res=LG.results;
   const yellows=topWithTies((res.cards||[]).slice().filter(s=>s&&s.name&&(s.yellow||0)>0).sort((a,b)=>(b.yellow||0)-(a.yellow||0)||a.name.localeCompare(b.name)),10,s=>s.yellow||0);
   const yc=document.createElement("div");yc.className="card reveal";
   let yrows=yellows.length?yellows.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div><span style="background:#f4c430;color:#06182f;border-radius:5px;padding:3px 9px;font-family:'Anton';font-size:14px;">${s.yellow||0} 🟨</span></div></div>`).join(""):`<p class="tiny">No yellow-card data imported yet.</p>`;
   yc.innerHTML=`<h2>🟨 Top 10 Yellow Cards</h2><p class="lead">Most-booked players by country.</p>${yrows}`;
   host.appendChild(yc);
+}
 
-  // TOP 10 RED CARDS
+// 🟥 REDS TAB — Top 10 red cards only
+function renderReds(host){
+  const res=LG.results;
   const reds=topWithTies((res.cards||[]).slice().filter(s=>s&&s.name&&(s.red||0)>0).sort((a,b)=>(b.red||0)-(a.red||0)||a.name.localeCompare(b.name)),10,s=>s.red||0);
   const rc=document.createElement("div");rc.className="card reveal";
   let rrows=reds.length?reds.map((s,i)=>`<div class="lbrow"><div class="rank">${i+1}</div><div class="nm">${esc(s.name)}${s.team?`<small>${esc(s.team)}</small>`:""}</div><div><span style="background:#e23744;color:#fff;border-radius:5px;padding:3px 9px;font-family:'Anton';font-size:14px;">${s.red||0} 🟥</span></div></div>`).join(""):`<p class="tiny">No red cards yet.</p>`;
   rc.innerHTML=`<h2>🟥 Top 10 Red Cards</h2><p class="lead">Players sent off, by country.</p>${rrows}`;
   host.appendChild(rc);
+}
 
+// 📋 FACTS TAB — match facts list + (scorer only) import panel
+function renderFacts(host){
+  const res=LG.results;
   const fc=document.createElement("div");fc.className="card reveal";
   let html=`<h2>📋 Match Facts</h2><p class="lead">Results, goalscorers and cards as they come in.</p>`;
   function factLines(f){
