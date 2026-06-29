@@ -450,7 +450,13 @@ function stageResultsComplete(stage,res){
   return KO_LIST[stage].every(mid=>{const s=res.ko[mid];return s&&s.a!=null&&s.b!=null;});
 }
 // Predictions for a stage are LOCKED once its fixed time passes, OR once real results for it start.
+// NOTE: this whole-stage lock applies to the GROUP stage only. Knockout rounds are NEVER
+// locked as a whole — each knockout match locks individually at its own kick-off (see
+// koMatchLocked), so the rest of the round stays open for prediction even after one game
+// has been played. Returning false here for knockouts lets stageStatus report "open" and
+// hands locking down to the per-match logic in renderPredictKO.
 function predLocked(stage,res){
+  if(stage!=="groups")return false;               // knockouts lock per-match, not per-round
   if(stageTimeLocked(stage))return true;
   return stageHasAnyResult(stage,res);
 }
@@ -1532,7 +1538,13 @@ function renderLeaderboard(host){
 /* ============================================================
    REVEAL LOCKED PREDICTIONS  (only for rounds that are locked)
    ============================================================ */
-function lockedStages(res){return STAGES.filter(s=>predLocked(s,res));}
+// A stage is "revealable" (picks can be shown) when it has locked. Groups lock as a whole;
+// a knockout round counts as revealable once ANY of its matches has individually locked.
+function stageRevealable(stage,res){
+  if(stage==="groups")return predLocked("groups",res);
+  return KO_LIST[stage].some(mid=>koMatchLocked(mid,res));
+}
+function lockedStages(res){return STAGES.filter(s=>stageRevealable(s,res));}
 function predResultPts(p,a){ // returns {pred, actual, pts} for a group match
   if(!p||p.h==null||p.a==null)return null;
   if(!a||a.h==null||a.a==null)return {pred:`${p.h}–${p.a}`,actual:null,pts:null};
@@ -1562,6 +1574,7 @@ function openPlayerReveal(pid){
       }else{
         let rows="";
         KO_LIST[stage].forEach(mid=>{
+          if(!koMatchLocked(mid,res))return;   // don't reveal picks for matches not yet locked
           const p=(pred.ko||{})[mid];if(!p||p.a==null||p.b==null||!p.aTeam||!p.bTeam)return;
           const a=res.ko[mid];
           let pts=null,act=null;
@@ -1596,7 +1609,9 @@ function openMatchReveal(kind,id){
   let stage,label,teams;
   if(kind==="group"){stage="groups";const m=findGroupMatch(id);teams=[m[0],m[1]];label=`${short(m[0])} v ${short(m[1])}`;}
   else{stage=kind;const a=res.ko[id];teams=a?[a.aTeam,a.bTeam]:["?","?"];label=`${short(teams[0]||"TBD")} v ${short(teams[1]||"TBD")}`;}
-  if(!predLocked(stage,res)){toast("Picks reveal once this round locks");return;}
+  // Groups reveal once the whole group stage locks; a knockout match reveals once THAT match locks.
+  const isLocked = kind==="group" ? predLocked("groups",res) : koMatchLocked(id,res);
+  if(!isLocked){toast("Picks reveal once this match locks");return;}
   busy("");const o=document.getElementById("ov");
   const rows=Object.keys(LG.players).map(pid=>{
     const pl=LG.players[pid];const pred=pl.pred||{};
